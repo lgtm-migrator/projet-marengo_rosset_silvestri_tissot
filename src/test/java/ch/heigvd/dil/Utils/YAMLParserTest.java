@@ -12,7 +12,7 @@ public class YAMLParserTest extends TestCase {
         YAMLParser parser = new YAMLParser();
         try {
             data = parser.read("data.yml");
-            assertTrue(data.get("penis") == "Huge");
+            assertSame(data.get("author"), "Bob");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
