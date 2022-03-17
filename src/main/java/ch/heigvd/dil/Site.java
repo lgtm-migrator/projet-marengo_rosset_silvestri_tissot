@@ -9,15 +9,15 @@ import picocli.CommandLine.Command;
 
 import java.util.concurrent.Callable;
 
-@Command(name = "Main", subcommands = {
+@Command(name = "site", subcommands = {
         CleanCmd.class,
         BuildCmd.class,
         ServeCmd.class,
         NewCmd.class
 })
-public class Main implements Callable<Integer> {
+public class Site implements Callable<Integer> {
     public static void main(String[] args) {
-        int rc = new CommandLine(new Main()).execute(args);
+        int rc = new CommandLine(new Site()).execute(args);
         System.exit(rc);
     }
 
