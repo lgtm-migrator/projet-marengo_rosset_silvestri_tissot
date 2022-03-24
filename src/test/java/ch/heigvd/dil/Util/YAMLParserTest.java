@@ -1,4 +1,4 @@
-package ch.heigvd.dil.Utils;
+package ch.heigvd.dil.Util;
 
 import junit.framework.TestCase;
 import org.junit.Test;
