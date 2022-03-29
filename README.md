@@ -28,11 +28,13 @@ Pour le moment, les sous-commandes se contentent d'afficher un message spécifiq
 Les exécutables peuvent être générés en exécutant la commande `mvn clean install` et seront disponibles dans le dossier
 `target/site/bin`.
 
-Pour que le programme soit utilisable comme une commande, il est nécessaire de l'ajouter à la path.
+Pour que le programme soit utilisable comme une commande, il est nécessaire de l'ajouter à la variable `path`.
 
-**Windows:** ```SET PATH=%PATH%;%CD%\site\bin```
+**Windows:** [Voir la marche à suivre](https://java.com/fr/download/help/path.html)
 
 **Unix:** ```export PATH=$PATH:`pwd\`/site/bin```
+
+L'application peut désormais être lancée en utilisant la commande `site`.
 
 # Utilisation
 
@@ -42,6 +44,3 @@ Lors du lancement de l'application, il est nécessaire de spécifier la sous-com
 - `build`
 - `serve`
 - `clean`
-
-Après compilation et génération d'un `jar` dans le dossier `target` avec Maven (`mvn package`), il suffit
-d'exécuter `java -jar Main-1.0.jar <sous-commande>` pour exécuter l'application.
