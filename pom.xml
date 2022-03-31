@@ -15,9 +15,9 @@
     <properties>
         <app.main.class>${project.groupId}.Site</app.main.class>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <app.distribution.directory>${project.artifactId}/bin</app.distribution.directory>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <app.distribution.directory>${project.artifactId}/bin</app.distribution.directory>
     </properties>
 
     <dependencies>
@@ -31,6 +31,11 @@
             <groupId>info.picocli</groupId>
             <artifactId>picocli</artifactId>
             <version>4.6.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.commonmark</groupId>
+            <artifactId>commonmark</artifactId>
+            <version>0.18.2</version>
         </dependency>
     </dependencies>
 
