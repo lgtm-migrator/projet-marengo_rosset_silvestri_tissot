@@ -1,9 +1,9 @@
-package ch.heigvd.dil.Util;
+package ch.heigvd.dil.util;
+
 
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -12,8 +12,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author : Géraud Silvestri
  * Mets à disposition un parser Yaml, retournant une map à partir d'un fichier ou d'une liste de String
+ *
+ * @author : Géraud Silvestri
  */
 public class YAMLParser {
     /**
@@ -21,17 +22,13 @@ public class YAMLParser {
      *
      * @param path chemin du fichier à parse
      * @return toutes les données du fichier donné
-     * @throws IOException retourne une exception si le fichier n'est pas trouver ou valide
+     * @throws IOException retourne une exception si le fichier n'est pas trouvé ou valide
      */
-    public Map<String, Object> parseFromFile(String path) throws Exception {
-        Map<String, Object> data = null;
+    public Map<String, Object> parseFromFile(String path) throws IOException {
+        Map<String, Object> data;
         try (InputStream inputStream = new FileInputStream(path)) {
             Yaml yaml = new Yaml();
             data = yaml.load(inputStream);
-        } catch (FileNotFoundException e) {
-            throw new FileNotFoundException("File not found");
-        } catch (Exception e) {
-            throw new IOException("File isn't a YAML file");
         }
 
         return data;
@@ -47,12 +44,10 @@ public class YAMLParser {
         Map<String, Object> data = new HashMap<>();
         List<String[]> temp = new ArrayList<>();
 
-        for (String line : content)
-            temp.add(line.split(":"));
+        for (String line : content) temp.add(line.split(":"));
 
         for (String[] line : temp) {
-            if (line.length == 2)
-                data.put(line[0], line[1]);
+            if (line.length == 2) data.put(line[0], line[1]);
         }
 
         return data;

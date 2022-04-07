@@ -1,10 +1,9 @@
 package ch.heigvd.dil.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-
 import java.io.IOException;
-import org.junit.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author Loïc Rosset
@@ -13,7 +12,6 @@ import org.junit.Test;
 public class HTMLConverterTest {
     private static final String TEST_FILE = "src/test/resources/markdown_correct.md";
 
-    @Test
     public void itShouldConvertMDtoHTML() throws IOException {
         String realConversion = "<h1>Mon premier article</h1>\n\n"
                 + "<h2>Mon sous-titre</h2>\n\n"
@@ -23,7 +21,6 @@ public class HTMLConverterTest {
         assertEquals(HTMLConverter.convertMarkdownFiles(TEST_FILE), realConversion);
     }
 
-    @Test
     public void itShouldThrowOnInvalidFile() {
         assertThrows(IOException.class, () -> HTMLConverter.convertMarkdownFiles("dummy.md"));
     }

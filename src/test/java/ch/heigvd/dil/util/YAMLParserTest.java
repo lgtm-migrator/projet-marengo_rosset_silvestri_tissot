@@ -1,10 +1,9 @@
-package ch.heigvd.dil.Util;
+package ch.heigvd.dil.util;
 
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -31,7 +30,7 @@ public class YAMLParserTest {
 
     @Test
     public void itShouldThrowOnNonValidFile() {
-        assertThrows(IOException.class, () -> parser.parseFromFile(WRONG_FILE));
+        assertThrows(ClassCastException.class, () -> parser.parseFromFile(WRONG_FILE));
     }
 
     @Test
