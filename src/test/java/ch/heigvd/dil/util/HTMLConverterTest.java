@@ -1,9 +1,9 @@
 package ch.heigvd.dil.util;
 
-import java.io.IOException;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.io.IOException;
 
 /**
  * @author Loïc Rosset

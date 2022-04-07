@@ -1,8 +1,6 @@
 package ch.heigvd.dil.util;
 
 
-import org.yaml.snakeyaml.Yaml;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.yaml.snakeyaml.Yaml;
 
 /**
  * Mets à disposition un parser Yaml, retournant une map à partir d'un fichier ou d'une liste de String
