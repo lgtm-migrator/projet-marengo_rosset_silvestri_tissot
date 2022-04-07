@@ -1,12 +1,12 @@
 package ch.heigvd.dil.util;
 
-import org.commonmark.node.Node;
-import org.commonmark.parser.Parser;
-import org.commonmark.renderer.html.HtmlRenderer;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import org.commonmark.node.Node;
+import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.HtmlRenderer;
 
 /**
  * Classe utilitaire pour convertir des fichiers markdowns en HTML.
@@ -61,8 +61,7 @@ public class HTMLConverter {
             result.append(lines[i]);
 
             // Ajout de retours à la ligne pour obtenir un résultat plus lisible
-            if (i < lines.length - 1)
-                result.append("\n\n");
+            if (i < lines.length - 1) result.append("\n\n");
         }
 
         return result.toString();
