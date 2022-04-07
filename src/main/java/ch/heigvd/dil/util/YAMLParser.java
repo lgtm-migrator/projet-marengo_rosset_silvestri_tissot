@@ -13,7 +13,7 @@ import org.yaml.snakeyaml.Yaml;
 /**
  * Mets à disposition un parser Yaml, retournant une map à partir d'un fichier ou d'une liste de String
  *
- * @author : Géraud Silvestri
+ * @author Géraud Silvestri
  */
 public class YAMLParser {
     /**

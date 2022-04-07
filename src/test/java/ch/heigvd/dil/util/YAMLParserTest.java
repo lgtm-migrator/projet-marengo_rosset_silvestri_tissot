@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import org.junit.jupiter.api.Test;
 
+/**
+ * @author Géraud Silvestri
+ */
 public class YAMLParserTest {
     final String PATH = "src/test/resources/data.yml";
     final String WRONG_FILE = "src/test/resources/data.txt";
