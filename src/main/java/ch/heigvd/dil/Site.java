@@ -1,10 +1,8 @@
 package ch.heigvd.dil;
 
 
-import ch.heigvd.dil.subcommands.BuildCmd;
-import ch.heigvd.dil.subcommands.CleanCmd;
-import ch.heigvd.dil.subcommands.NewCmd;
-import ch.heigvd.dil.subcommands.ServeCmd;
+import ch.heigvd.dil.subcommands.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -15,7 +13,7 @@ import picocli.CommandLine.IVersionProvider;
 
 @Command(
         name = "site",
-        subcommands = {CleanCmd.class, BuildCmd.class, ServeCmd.class, NewCmd.class},
+        subcommands = {CleanCmd.class, BuildCmd.class, ServeCmd.class, InitCmd.class},
         mixinStandardHelpOptions = true,
         versionProvider = Site.VersionProvider.class)
 public class Site implements Callable<Integer> {
