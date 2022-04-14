@@ -4,10 +4,7 @@ package ch.heigvd.dil.util;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import org.yaml.snakeyaml.Yaml;
 
 /**
@@ -39,7 +36,7 @@ public class YAMLParser {
      * @param content liste de String correspondant chacune à une ligne
      * @return la map contenant les données, vide si la liste n'est pas valide
      */
-    public Map<String, Object> parseFromString(List<String> content) {
+    public static Map<String, Object> parseFromString(List<String> content) {
         Map<String, Object> data = new HashMap<>();
         List<String[]> temp = new ArrayList<>();
 
@@ -50,5 +47,15 @@ public class YAMLParser {
         }
 
         return data;
+    }
+
+    /**
+     * Crée une map à partir d'un String
+     *
+     * @param content string contenant les données YAML
+     * @return la map contenant les données, vide si la liste est vide
+     */
+    public static Map<String, Object> parseFromString(String content) {
+        return parseFromString(new ArrayList<>(Arrays.asList(content.split("\r\n"))));
     }
 }
