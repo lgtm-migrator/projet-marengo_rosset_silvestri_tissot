@@ -1,10 +1,12 @@
 package ch.heigvd.dil.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.io.IOException;
 import org.junit.jupiter.api.Test;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Loïc Rosset
@@ -20,11 +22,17 @@ public class HTMLConverterTest {
                 + "<p>Le contenu de mon article.</p>\n\n"
                 + "<img src=\"./image.png\" alt=\"Une image\" />";
 
-        assertEquals(HTMLConverter.convertMarkdownFiles(TEST_FILE), realConversion);
-    }
+        StringBuilder markdown = new StringBuilder();
 
-    @Test
-    public void itShouldThrowOnInvalidFile() {
-        assertThrows(IOException.class, () -> HTMLConverter.convertMarkdownFiles("dummy.md"));
+        try (BufferedReader reader = new BufferedReader(new FileReader(TEST_FILE))) {
+            String line = reader.readLine();
+
+            while (line != null) {
+                markdown.append(line).append("\r\n");
+                line = reader.readLine();
+            }
+        }
+
+        assertEquals(HTMLConverter.convertMarkdownToHTML(markdown.toString()), realConversion);
     }
 }
