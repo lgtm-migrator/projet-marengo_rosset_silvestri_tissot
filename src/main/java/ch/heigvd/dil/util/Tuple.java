@@ -1,5 +1,6 @@
 package ch.heigvd.dil.util;
 
+
 import java.util.Map;
 
 /**

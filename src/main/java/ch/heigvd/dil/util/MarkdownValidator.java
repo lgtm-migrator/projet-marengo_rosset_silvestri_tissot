@@ -1,5 +1,6 @@
 package ch.heigvd.dil.util;
 
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -12,7 +13,7 @@ import java.io.IOException;
  */
 public class MarkdownValidator {
 
-    final static String SEPARATOR = "----";
+    static final String SEPARATOR = "----";
 
     /**
      * Converti le fichier markdown passé en paramètre en HTML.
