@@ -1,7 +1,9 @@
 package ch.heigvd.dil.util;
 
 /**
- * Contient toutes les données nécessaires pour la construction d'un site statique
+ * Permet de stocker 2 données en une seule
+ *
+ * @author Géraud Silvestri
  */
 public class Tuple<E, T> {
     private final E first;

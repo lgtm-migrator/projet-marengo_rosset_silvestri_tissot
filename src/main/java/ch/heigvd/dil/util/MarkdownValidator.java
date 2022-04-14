@@ -36,6 +36,6 @@ public class MarkdownValidator {
         }
 
         String[] datas = markdown.toString().split(SEPARATOR);
-        return new Tuple(YAMLParser.parseFromString(datas[0]), HTMLConverter.convertMarkdownToHTML(datas[1]));
+        return new Tuple<>(YAMLParser.parseFromString(datas[0]), HTMLConverter.convertMarkdownToHTML(datas[1]));
     }
 }
