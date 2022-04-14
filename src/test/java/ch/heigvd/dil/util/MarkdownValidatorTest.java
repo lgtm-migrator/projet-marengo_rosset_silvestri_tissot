@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -20,12 +21,12 @@ class MarkdownValidatorTest {
 
     @Test
     public void itShouldParseCorrectly() throws IOException {
-        Tuple data = MarkdownValidator.convertMarkdownFiles(PATH);
+        Tuple<Map<String, Object>, String> data = MarkdownValidator.convertMarkdownFiles(PATH);
 
-        assertEquals(data.getHtmlData(), REAL_CONVERSION);
-        assertEquals(data.getYamlData().get("author"), "Bob");
-        assertEquals(data.getYamlData().get("version"), "0.0.1");
-        assertEquals(data.getYamlData().get("date"), "today");
+        assertEquals(data.getSecond(), REAL_CONVERSION);
+        assertEquals(data.getFirst().get("author"), "Bob");
+        assertEquals(data.getFirst().get("version"), "0.0.1");
+        assertEquals(data.getFirst().get("date"), "today");
     }
 
     @Test

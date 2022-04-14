@@ -4,6 +4,7 @@ package ch.heigvd.dil.util;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Mets à disposition une méthode permettant de séparer les données YAML et md d'un document
@@ -22,7 +23,7 @@ public class MarkdownValidator {
      * @return le contenu en HTML
      * @throws IOException si une erreur I/O survient
      */
-    public static Tuple convertMarkdownFiles(String path) throws IOException {
+    public static Tuple<Map<String, Object>, String> convertMarkdownFiles(String path) throws IOException {
         StringBuilder markdown = new StringBuilder();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(path))) {

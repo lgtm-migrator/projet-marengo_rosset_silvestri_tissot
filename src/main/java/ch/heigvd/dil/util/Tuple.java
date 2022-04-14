@@ -1,25 +1,22 @@
 package ch.heigvd.dil.util;
 
-
-import java.util.Map;
-
 /**
  * Contient toutes les données nécessaires pour la construction d'un site statique
  */
-public class Tuple {
-    private final Map<String, Object> yamlData;
-    private final String htmlData;
+public class Tuple<E, T> {
+    private final E first;
+    private final T second;
 
-    public Tuple(Map<String, Object> yamlData, String htmlData) {
-        this.yamlData = yamlData;
-        this.htmlData = htmlData;
+    public Tuple(E dataFirst, T dataSecond) {
+        this.first = dataFirst;
+        this.second = dataSecond;
     }
 
-    public Map<String, Object> getYamlData() {
-        return yamlData;
+    public E getFirst() {
+        return first;
     }
 
-    public String getHtmlData() {
-        return htmlData;
+    public T getSecond() {
+        return second;
     }
 }
