@@ -1,6 +1,7 @@
 package ch.heigvd.dil.subcommands;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static picocli.CommandLine.ExitCode;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,44 +22,44 @@ class BuildCmdTest extends BaseCmdTest {
 
     @Test
     void itShouldThrowOnInvalidPath() {
-        assertEquals(2, execute(INVALID_PATH));
+        assertEquals(ExitCode.USAGE, execute(INVALID_PATH));
     }
 
     @Test
     void itShouldThrowOnNotADirectory() {
-        assertEquals(2, execute(NOT_A_DIRECTORY));
+        assertEquals(ExitCode.USAGE, execute(NOT_A_DIRECTORY));
     }
 
     @Test
     void itShouldThrowOnMissingPath() {
-        assertEquals(2, execute());
+        assertEquals(ExitCode.USAGE, execute());
     }
 
     @Test
     void itShouldCreateTheBuildDirectory() {
         execute(TEST_DIRECTORY.toString());
         assertTrue(Files.isDirectory(BUILD_DIR));
-        assertEquals(0, getReturnCode());
+        assertEquals(ExitCode.OK, getReturnCode());
     }
 
     @Test
     void itShouldBuildTheSite() {
         execute(TEST_DIRECTORY.toString());
         assertTrue(Files.exists(BUILD_DIR.resolve("index.html")));
-        assertEquals(0, getReturnCode());
+        assertEquals(ExitCode.OK, getReturnCode());
     }
 
     @Test
     void itShouldNotIncludeConfigFiles() {
         execute(TEST_DIRECTORY.toString());
         assertFalse(Files.exists(BUILD_DIR.resolve("config.yml")));
-        assertEquals(0, getReturnCode());
+        assertEquals(ExitCode.OK, getReturnCode());
     }
 
     @Test
     void itShouldCopyTheAssets() {
         execute(TEST_DIRECTORY.toString());
         assertTrue(Files.exists(BUILD_DIR.resolve(Path.of("images", "image.jpg"))));
-        assertEquals(0, getReturnCode());
+        assertEquals(ExitCode.OK, getReturnCode());
     }
 }

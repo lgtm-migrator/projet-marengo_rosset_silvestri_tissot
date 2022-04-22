@@ -1,7 +1,6 @@
 package ch.heigvd.dil.subcommands;
 
-import static picocli.CommandLine.Command;
-import static picocli.CommandLine.Parameters;
+import static picocli.CommandLine.*;
 
 import ch.heigvd.dil.converter.PathDirectoryConverter;
 import ch.heigvd.dil.util.FilesHelper;
@@ -29,19 +28,19 @@ public class BuildCmd implements Callable<Integer> {
             FilesHelper.cleanDirectory(out);
         } catch (IOException e) {
             System.err.println("An error occurred while creating the directory: " + e.getMessage());
-            return 1;
+            return ExitCode.SOFTWARE;
         }
 
         try {
             build(path, out);
         } catch (IOException e) {
             System.err.println("An error occurred while building the site: " + e.getMessage());
-            return 1;
+            return ExitCode.SOFTWARE;
         }
 
         System.out.println("Site built successfully to " + out.toAbsolutePath());
 
-        return 0;
+        return ExitCode.OK;
     }
 
     /**

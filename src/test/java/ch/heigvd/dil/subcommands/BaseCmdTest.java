@@ -31,13 +31,23 @@ abstract class BaseCmdTest {
     protected abstract String getCommandName();
 
     /**
-     * Exécute la commande avec les arguments donnés.
+     * Exécute la commande définie par le test avec les arguments donnés.
      * @param args les arguments de la commande
      * @return le code de retour de la commande
      */
     protected int execute(String... args) {
+        return executeCmd(getCommandName(), args);
+    }
+
+    /**
+     * Exécute la commande spécifiée avec les arguments donnés.
+     * @param command le nom de la commande
+     * @param args les arguments
+     * @return le code de retour
+     */
+    protected int executeCmd(String command, String... args) {
         String[] cmdArgs = new String[args.length + 1];
-        cmdArgs[0] = getCommandName();
+        cmdArgs[0] = command;
         System.arraycopy(args, 0, cmdArgs, 1, args.length);
         return returnCode = cmd.execute(cmdArgs);
     }
