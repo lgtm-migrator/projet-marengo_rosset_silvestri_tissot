@@ -18,7 +18,7 @@ public class HTMLConverter {
      * @param markdown le contenu en format markdown
      * @return le contenu converti en HTML
      */
-    protected static String convertMarkdownToHTML(String markdown) {
+    public static String fromMarkdown(String markdown) {
         Parser parser = Parser.builder().build();
         Node document = parser.parse(markdown);
         HtmlRenderer htmlRenderer = HtmlRenderer.builder().build();

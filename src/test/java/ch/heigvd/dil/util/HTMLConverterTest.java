@@ -32,6 +32,6 @@ public class HTMLConverterTest {
             }
         }
 
-        assertEquals(HTMLConverter.convertMarkdownToHTML(markdown.toString()), realConversion);
+        assertEquals(HTMLConverter.fromMarkdown(markdown.toString()), realConversion);
     }
 }
