@@ -17,7 +17,7 @@ import java.util.stream.Stream;
  */
 @Command(name = "build", description = "Builds the site")
 public class BuildCmd implements Callable<Integer> {
-    private static final String BUILD_DIR = "build";
+    public static final String BUILD_DIR = "build";
 
     @Parameters(description = "Path to the sources directory", converter = PathDirectoryConverter.class)
     private Path path;

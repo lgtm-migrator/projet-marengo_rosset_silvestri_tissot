@@ -2,6 +2,13 @@ package ch.heigvd.dil.subcommands;
 
 
 import ch.heigvd.dil.Site;
+import ch.heigvd.dil.util.FilesHelper;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import picocli.CommandLine;
 
@@ -12,6 +19,8 @@ import picocli.CommandLine;
  * @author Silvestri Géraud
  */
 abstract class BaseCmdTest {
+    protected static final Path TEST_SRC_DIRECTORY = Path.of("src", "test", "resources", "basicSite");
+    protected static final Path TEST_DIRECTORY = Path.of("basicSite");
     private CommandLine cmd;
     private int returnCode;
 
@@ -37,7 +46,7 @@ abstract class BaseCmdTest {
      * Initialise l'application entre chaque test.
      */
     @BeforeEach
-    protected void setUp() {
+    protected void setUpCmd() {
         cmd = new CommandLine(new Site());
     }
 
@@ -47,5 +56,46 @@ abstract class BaseCmdTest {
      */
     protected int getReturnCode() {
         return returnCode;
+    }
+
+    /**
+     * Crée un site de test basique.
+     * @throws IOException si une erreur survient lors de la création du site
+     */
+    @BeforeAll
+    protected static void createBasicSite() throws IOException {
+        Files.createDirectories(TEST_DIRECTORY);
+
+        copyDirectory(TEST_SRC_DIRECTORY, TEST_DIRECTORY);
+    }
+
+    /**
+     * Supprime le site de test.
+     * @throws IOException si une erreur survient lors de la suppression du site
+     */
+    @AfterAll
+    protected static void deleteBasicSite() throws IOException {
+        FilesHelper.cleanDirectory(TEST_DIRECTORY);
+        Files.delete(TEST_DIRECTORY);
+    }
+
+    /**
+     * Copie un répertoire.
+     * @param src le répertoire source
+     * @param dst le répertoire de destination
+     * @throws IOException si une erreur survient lors de la copie
+     */
+    protected static void copyDirectory(Path src, Path dst) throws IOException {
+        try (Stream<Path> walk = Files.walk(src)) {
+            walk.filter(Files::isRegularFile).forEach(p -> {
+                Path dest = dst.resolve(src.relativize(p));
+                try {
+                    Files.createDirectories(dest.getParent());
+                    Files.copy(p, dest);
+                } catch (IOException e) {
+                    System.err.println("Error while copying " + p + " to " + dest + ": " + e.getMessage());
+                }
+            });
+        }
     }
 }
