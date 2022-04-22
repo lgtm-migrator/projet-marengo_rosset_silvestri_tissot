@@ -55,7 +55,7 @@ public class BuildCmd implements Callable<Integer> {
                     .filter(p -> !p.toString().endsWith(".yml"))
                     .filter(p -> !p.toString().endsWith(".yaml"))
                     .forEach(p -> {
-                        var outPath = destDir.resolve(p.subpath(1, p.getNameCount()));
+                        var outPath = destDir.resolve(srcDir.relativize(p));
                         try {
                             if (p.toString().endsWith(".md")) {
                                 convertMdToHTML(p, outPath);
