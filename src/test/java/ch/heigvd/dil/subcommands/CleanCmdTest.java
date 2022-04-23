@@ -1,11 +1,6 @@
-package ch.heigvd.dil.util;
+package ch.heigvd.dil.subcommands;
 
-import ch.heigvd.dil.Site;
-import ch.heigvd.dil.subcommands.CleanCmd;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import picocli.CommandLine;
+import static org.junit.Assert.assertFalse;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,16 +9,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.stream.Stream;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Tissot Olivier
  * @author Stéphane Marengo
  */
-
-public class CleanCmdTest {
+public class CleanCmdTest extends BaseCmdTest {
     private static final String NAME_SITE = "SiteClearCmdTest";
     private static final Path PATH = Paths.get(NAME_SITE);
     private static final String BUILD = "build";
@@ -31,20 +25,22 @@ public class CleanCmdTest {
 
     private static final String DIRECTORY = "dossierTest";
 
-    /*@After
-    public void clearConfig() throws IOException {
+    protected String getCommandName() {
+        return "clean";
+    }
+
+    @AfterAll
+    static void clearConfig() throws IOException {
         if (!Files.exists(PATH)) return;
 
         try (Stream<Path> walk = Files.walk(PATH)) {
-            walk.sorted(Comparator.reverseOrder())
-                    .map(Path::toFile)
-                    .forEach(File::delete);
+            walk.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
         }
-    }*/
+    }
 
-    @Before
+    @BeforeEach
     public void createBuildFiles() throws IOException {
-        //clearConfig();
+        clearConfig();
 
         if (!Files.exists(PATH)) {
             Files.createDirectory(PATH);
@@ -57,9 +53,7 @@ public class CleanCmdTest {
 
     @Test
     public void itShouldDeleteTheBuildDirAndItsContent() {
-        var s = new CleanCmd();
-        var cmd = new CommandLine(s).execute("clean", "SiteClearCmdTest");
+        execute(NAME_SITE);
         assertFalse(Files.exists(Paths.get(NAME_SITE, BUILD)));
     }
-
 }
