@@ -1,6 +1,7 @@
 package ch.heigvd.dil.subcommands;
 
 
+import ch.heigvd.dil.converter.PathConverter;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,7 +20,7 @@ public class InitCmd implements Callable<Integer> {
     private static final String CONFIG_FILE = "config.default.yaml";
     private static final String INDEX_FILE = "index.default.md";
 
-    @Parameters(description = "Path to the new site")
+    @Parameters(description = "Path to the new site", converter = PathConverter.class)
     private Path path;
 
     @Override
