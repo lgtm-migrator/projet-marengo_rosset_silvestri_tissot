@@ -1,16 +1,14 @@
 package ch.heigvd.dil.subcommands;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
-import picocli.CommandLine;
-
-import java.io.IOException;
-import java.nio.file.Files;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static picocli.CommandLine.*;
 
-public class InitCmdTest extends BaseCmdTest{
+import java.io.IOException;
+import java.nio.file.Files;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+
+public class InitCmdTest extends BaseCmdTest {
     private static final String INVALID_PATH = "/*invalidPath";
 
     @Override
