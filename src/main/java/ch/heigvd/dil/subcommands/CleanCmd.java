@@ -1,42 +1,39 @@
 package ch.heigvd.dil.subcommands;
 
+import static picocli.CommandLine.ExitCode;
+import static picocli.CommandLine.Parameters;
 
-import java.io.File;
+import ch.heigvd.dil.converter.PathDirectoryConverter;
+import ch.heigvd.dil.util.FilesHelper;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Comparator;
 import java.util.concurrent.Callable;
-import java.util.stream.Stream;
-import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 /**
  * @author Tissot Olivier
  * @author Stéphane Marengo
  */
-@Command(name = "clean", description = "Subcommand clean !")
+@Command(name = "clean", description = "Delete the build directory")
 public class CleanCmd implements Callable<Integer> {
-    private static final String BUILD = "build";
-
-    @CommandLine.Parameters(arity = "1", description = "Chemin du site dont il faut supprimer le build")
-    String path;
+    @Parameters(description = "Path to the sources directory", converter = PathDirectoryConverter.class)
+    private Path path;
 
     @Override
     public Integer call() {
-        System.out.println("Suppression du dossier build de " + path);
+        Path buildDir = path.resolve(BuildCmd.BUILD_DIR);
 
-        Path pathComplet = Paths.get(path, BUILD);
-        if (!Files.exists(pathComplet)) return 0;
+        if (!Files.isDirectory(buildDir)) return ExitCode.OK;
 
-        try (Stream<Path> walk = Files.walk(pathComplet)) {
-            walk.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+        try {
+            FilesHelper.cleanDirectory(buildDir);
+            Files.delete(buildDir);
         } catch (IOException e) {
-            System.out.println("Impossible");
-            return -1;
+            System.err.println("Error while cleaning the build directory: " + e.getMessage());
+            return ExitCode.SOFTWARE;
         }
 
-        return 0;
+        return ExitCode.OK;
     }
 }
