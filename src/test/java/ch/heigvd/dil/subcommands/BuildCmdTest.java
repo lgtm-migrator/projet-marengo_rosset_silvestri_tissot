@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
  * @author Marengo Stéphane
  */
 class BuildCmdTest extends BaseCmdTest {
-    private static final String INVALID_PATH = "/*invalidPath";
     private static final String NOT_A_DIRECTORY = "notADirectory/";
 
     @BeforeEach
@@ -62,7 +61,7 @@ class BuildCmdTest extends BaseCmdTest {
     @Test
     void itShouldNotIncludeConfigFiles() {
         assertEquals(ExitCode.OK, execute(TEST_DIRECTORY.toString()));
-        assertFalse(Files.exists(BUILD_PATH.resolve("config.yml")));
+        assertFalse(Files.exists(BUILD_PATH.resolve("config.yaml")));
     }
 
     @Test

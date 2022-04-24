@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
  * @author Marengo Stéphane
  */
 class ServeCmdTest extends BaseCmdTest {
-    private static final String INVALID_PATH = "/*invalidPath";
     private static final String NOT_A_DIRECTORY = "notADirectory/";
 
     @Override
