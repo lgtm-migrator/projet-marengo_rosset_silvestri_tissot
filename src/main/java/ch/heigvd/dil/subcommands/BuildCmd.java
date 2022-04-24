@@ -1,7 +1,6 @@
 package ch.heigvd.dil.subcommands;
 
-import static picocli.CommandLine.Command;
-import static picocli.CommandLine.Parameters;
+import static picocli.CommandLine.*;
 
 import ch.heigvd.dil.converter.PathDirectoryConverter;
 import ch.heigvd.dil.util.FilesHelper;
@@ -17,7 +16,7 @@ import java.util.stream.Stream;
  */
 @Command(name = "build", description = "Builds the site")
 public class BuildCmd implements Callable<Integer> {
-    private static final String BUILD_DIR = "build";
+    public static final String BUILD_DIR = "build";
 
     @Parameters(description = "Path to the sources directory", converter = PathDirectoryConverter.class)
     private Path path;
@@ -29,19 +28,19 @@ public class BuildCmd implements Callable<Integer> {
             FilesHelper.cleanDirectory(out);
         } catch (IOException e) {
             System.err.println("An error occurred while creating the directory: " + e.getMessage());
-            return 1;
+            return ExitCode.SOFTWARE;
         }
 
         try {
             build(path, out);
         } catch (IOException e) {
             System.err.println("An error occurred while building the site: " + e.getMessage());
-            return 1;
+            return ExitCode.SOFTWARE;
         }
 
         System.out.println("Site built successfully to " + out.toAbsolutePath());
 
-        return 0;
+        return ExitCode.OK;
     }
 
     /**
@@ -56,7 +55,7 @@ public class BuildCmd implements Callable<Integer> {
                     .filter(p -> !p.toString().endsWith(".yml"))
                     .filter(p -> !p.toString().endsWith(".yaml"))
                     .forEach(p -> {
-                        var outPath = destDir.resolve(p.subpath(1, p.getNameCount()));
+                        var outPath = destDir.resolve(srcDir.relativize(p));
                         try {
                             if (p.toString().endsWith(".md")) {
                                 convertMdToHTML(p, outPath);
