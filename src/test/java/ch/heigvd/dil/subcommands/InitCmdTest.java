@@ -9,8 +9,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 public class InitCmdTest extends BaseCmdTest {
-    private static final String INVALID_PATH = "/*invalidPath";
-
     @Override
     protected String getCommandName() {
         return "init";
