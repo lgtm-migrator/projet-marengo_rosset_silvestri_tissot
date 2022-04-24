@@ -1,7 +1,7 @@
-titre: Mon premier article
-auteur: Loïc Rosset
-date: 2022-04-07
+title: My first site
+author: ...
+date: ...
 ---
-# Page d'accueil de mon site
+# Home page of my site
 ## Copyright
-Bienvenue.
+Welcome
