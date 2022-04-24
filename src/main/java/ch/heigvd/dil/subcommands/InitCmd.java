@@ -1,54 +1,45 @@
 package ch.heigvd.dil.subcommands;
 
-import ch.heigvd.dil.util.HTMLConverter;
-import picocli.CommandLine.Parameters;
-import picocli.CommandLine.ExitCode;
-import picocli.CommandLine.Command;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.ExitCode;
+import picocli.CommandLine.Parameters;
 
 /**
  * @author Loïc Rosset
+ * @author Stéphane Marengo
  */
-@Command(name = "init", description = "Subcommand init !")
+@Command(name = "init", description = "Initialize a new site by creating a config file and an index file")
 public class InitCmd implements Callable<Integer> {
 
-    @Parameters(arity = "1", description = "Root path for the init site.")
+    private static final String CONFIG_FILE = "config.default.yaml";
+    private static final String INDEX_FILE = "index.default.md";
 
+    @Parameters(description = "Path to the new site")
     private Path path;
 
     @Override
     public Integer call() {
-        System.out.println("Init command !");
-
-        try{
-            createFolder(path);
+        try {
+            Files.createDirectories(path);
         } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("The folders provided as parameters  cannot be created.");
-            return ExitCode.USAGE;
+            System.err.println("Error while creating the site: " + e.getMessage());
+            return ExitCode.SOFTWARE;
         }
-
-        Path filePath = path.resolve("index.html");
-        Path copyPath = path.resolve("index.default.md");
 
         try {
-            deleteFile(copyPath);
-            Files.copy(getResourceAsStream("index.default.md"), copyPath);
-            Files.writeString(filePath, HTMLConverter.fromMarkdown(Files.readString(copyPath)));
-            deleteFile(copyPath);
+            copyFileIfMissing(CONFIG_FILE, path.resolve("config.yaml"));
+            copyFileIfMissing(INDEX_FILE, path.resolve("index.md"));
         } catch (IOException e) {
-            try{
-                deleteFile(filePath);
-            } catch (IOException ex) {
-                System.out.println("The system had a problem during the creation of the index and cannot delete it.");
-            }
-            System.out.println("The index file cannot be created or updated.");
-            return ExitCode.USAGE;
+            System.err.println("Error while creating the default files: " + e.getMessage());
+            return ExitCode.SOFTWARE;
         }
+
+        System.out.println("Site successfully created at " + path.toAbsolutePath());
 
         return ExitCode.OK;
     }
@@ -59,29 +50,24 @@ public class InitCmd implements Callable<Integer> {
      * @return un InputStream sur le fichier
      * @throws IOException si le fichier ne peut pas être ouvert
      */
-    private static InputStream getResourceAsStream(String fileName) throws IOException {
+    private InputStream getResourceAsStream(String fileName) throws IOException {
         InputStream in = InitCmd.class.getClassLoader().getResourceAsStream(fileName);
-        if (in == null)
-            throw new IOException("File " + fileName + " not found in resources.");
+        if (in == null) throw new IOException("File " + fileName + " not found in resources.");
 
         return in;
     }
 
     /**
-     * Création d'un dossier
-     * @param path Chemin du dossier
-     * @throws IOException Si sa création ne fonctionne pas
+     * Copie le fichier de resource à la destination
+     * @param srcFile le nom du fichier de resource à copier
+     * @param destFile la destination du fichier
+     * @throws IOException si une erreur survient lors de la copie
      */
-    private void createFolder(Path path) throws IOException {
-        Files.createDirectories(path);
-    }
+    private void copyFileIfMissing(String srcFile, Path destFile) throws IOException {
+        if (Files.isRegularFile(destFile)) return;
 
-    /**
-     * Suppression d'un fichier s'il existe
-     * @param path Chemin du fichier
-     * @throws IOException Si sa suppression ne fonctionne pas
-     */
-    private void deleteFile(Path path) throws IOException {
-        Files.deleteIfExists(path);
+        try (InputStream in = getResourceAsStream(srcFile)) {
+            Files.copy(in, destFile);
+        }
     }
 }

@@ -2,7 +2,6 @@ package ch.heigvd.dil;
 
 
 import ch.heigvd.dil.subcommands.*;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
