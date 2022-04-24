@@ -62,7 +62,7 @@ class BuildCmdTest extends BaseCmdTest {
     @Test
     void itShouldNotIncludeConfigFiles() {
         assertEquals(ExitCode.OK, execute(TEST_DIRECTORY.toString()));
-        assertFalse(Files.exists(BUILD_PATH.resolve("config.yml")));
+        assertFalse(Files.exists(BUILD_PATH.resolve("config.yaml")));
     }
 
     @Test

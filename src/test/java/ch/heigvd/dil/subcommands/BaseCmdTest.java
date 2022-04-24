@@ -16,6 +16,7 @@ import picocli.CommandLine;
  * @author Silvestri Géraud
  */
 abstract class BaseCmdTest {
+    protected static final Path MAIN_RESOURCES = Path.of("src/main/resources");
     protected static final Path TEST_SRC_DIRECTORY = Path.of("src/test/resources/basicSite");
     protected static final Path BUILD_SRC_DIRECTORY = Path.of("src/test/resources/basicSiteBuild");
     protected static final Path TEST_DIRECTORY = Path.of("basicSite");
