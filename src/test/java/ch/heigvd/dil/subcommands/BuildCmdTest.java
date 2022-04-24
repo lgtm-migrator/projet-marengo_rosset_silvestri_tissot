@@ -3,8 +3,11 @@ package ch.heigvd.dil.subcommands;
 import static org.junit.jupiter.api.Assertions.*;
 import static picocli.CommandLine.ExitCode;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -13,7 +16,16 @@ import org.junit.jupiter.api.Test;
 class BuildCmdTest extends BaseCmdTest {
     private static final String INVALID_PATH = "/*invalidPath";
     private static final String NOT_A_DIRECTORY = "notADirectory/";
-    private static final Path BUILD_DIR = TEST_DIRECTORY.resolve(BuildCmd.BUILD_DIR);
+
+    @BeforeEach
+    protected void setUp() throws Exception {
+        createBasicSite();
+    }
+
+    @AfterEach
+    protected void clean() throws IOException {
+        deleteBasicSite();
+    }
 
     @Override
     protected String getCommandName() {
@@ -37,29 +49,25 @@ class BuildCmdTest extends BaseCmdTest {
 
     @Test
     void itShouldCreateTheBuildDirectory() {
-        execute(TEST_DIRECTORY.toString());
-        assertTrue(Files.isDirectory(BUILD_DIR));
-        assertEquals(ExitCode.OK, getReturnCode());
+        assertEquals(ExitCode.OK, execute(TEST_DIRECTORY.toString()));
+        assertTrue(Files.isDirectory(BUILD_PATH));
     }
 
     @Test
     void itShouldBuildTheSite() {
-        execute(TEST_DIRECTORY.toString());
-        assertTrue(Files.exists(BUILD_DIR.resolve("index.html")));
-        assertEquals(ExitCode.OK, getReturnCode());
+        assertEquals(ExitCode.OK, execute(TEST_DIRECTORY.toString()));
+        assertTrue(Files.exists(BUILD_PATH.resolve("index.html")));
     }
 
     @Test
     void itShouldNotIncludeConfigFiles() {
-        execute(TEST_DIRECTORY.toString());
-        assertFalse(Files.exists(BUILD_DIR.resolve("config.yml")));
-        assertEquals(ExitCode.OK, getReturnCode());
+        assertEquals(ExitCode.OK, execute(TEST_DIRECTORY.toString()));
+        assertFalse(Files.exists(BUILD_PATH.resolve("config.yml")));
     }
 
     @Test
     void itShouldCopyTheAssets() {
-        execute(TEST_DIRECTORY.toString());
-        assertTrue(Files.exists(BUILD_DIR.resolve(Path.of("images", "image.jpg"))));
-        assertEquals(ExitCode.OK, getReturnCode());
+        assertEquals(ExitCode.OK, execute(TEST_DIRECTORY.toString()));
+        assertTrue(Files.exists(BUILD_PATH.resolve(Path.of("images", "image.jpg"))));
     }
 }

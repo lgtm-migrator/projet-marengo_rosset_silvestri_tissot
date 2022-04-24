@@ -7,9 +7,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import picocli.CommandLine;
 
 /**
@@ -19,10 +16,10 @@ import picocli.CommandLine;
  * @author Silvestri Géraud
  */
 abstract class BaseCmdTest {
-    protected static final Path TEST_SRC_DIRECTORY = Path.of("src", "test", "resources", "basicSite");
+    protected static final Path TEST_SRC_DIRECTORY = Path.of("src/test/resources/basicSite");
+    protected static final Path BUILD_SRC_DIRECTORY = Path.of("src/test/resources/basicSiteBuild");
     protected static final Path TEST_DIRECTORY = Path.of("basicSite");
-    private CommandLine cmd;
-    private int returnCode;
+    protected static final Path BUILD_PATH = TEST_DIRECTORY.resolve(BuildCmd.BUILD_DIR);
 
     /**
      * Retourne le nom de la commande à tester.
@@ -45,34 +42,17 @@ abstract class BaseCmdTest {
      * @param args les arguments
      * @return le code de retour
      */
-    protected int executeCmd(String command, String... args) {
+    private int executeCmd(String command, String... args) {
         String[] cmdArgs = new String[args.length + 1];
         cmdArgs[0] = command;
         System.arraycopy(args, 0, cmdArgs, 1, args.length);
-        return returnCode = cmd.execute(cmdArgs);
-    }
-
-    /**
-     * Initialise l'application entre chaque test.
-     */
-    @BeforeEach
-    protected void setUpCmd() {
-        cmd = new CommandLine(new Site());
-    }
-
-    /**
-     * Retourne le code de retour suite à l'exécution de la commande.
-     * @return le code de retour
-     */
-    protected int getReturnCode() {
-        return returnCode;
+        return new CommandLine(new Site()).execute(cmdArgs);
     }
 
     /**
      * Crée un site de test basique.
      * @throws IOException si une erreur survient lors de la création du site
      */
-    @BeforeAll
     protected static void createBasicSite() throws IOException {
         Files.createDirectories(TEST_DIRECTORY);
 
@@ -83,10 +63,27 @@ abstract class BaseCmdTest {
      * Supprime le site de test.
      * @throws IOException si une erreur survient lors de la suppression du site
      */
-    @AfterAll
     protected static void deleteBasicSite() throws IOException {
         FilesHelper.cleanDirectory(TEST_DIRECTORY);
         Files.delete(TEST_DIRECTORY);
+    }
+
+    /**
+     * Créé et construit le site de test.
+     * @throws IOException si une erreur survient lors de la construction du site
+     */
+    protected static void buildBasicSite() throws IOException {
+        createBasicSite();
+        copyDirectory(BUILD_SRC_DIRECTORY, BUILD_PATH);
+    }
+
+    /**
+     * Supprime le dossier de build du site.
+     * @throws IOException si une erreur survient lors de la suppression du dossier de build
+     */
+    protected static void cleanBuild() throws IOException {
+        FilesHelper.cleanDirectory(BUILD_PATH);
+        Files.delete(BUILD_PATH);
     }
 
     /**
