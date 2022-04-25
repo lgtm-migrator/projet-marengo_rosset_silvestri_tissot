@@ -1,6 +1,3 @@
-author: Bob
-version: 0.0.1
-date: today
 ----
 # Mon premier article
 
@@ -8,4 +5,4 @@ date: today
 
 Le contenu de mon article.
 
-![Une image](./images/image.jpg)
+![Une image](./image.png)

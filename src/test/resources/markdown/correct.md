@@ -1,6 +1,6 @@
-author:Bob
-version:0.0.1
-date:today
+author: Bob
+version: 0.0.1
+date: today
 ----
 # Mon premier article
 
