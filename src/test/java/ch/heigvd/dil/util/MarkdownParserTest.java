@@ -1,11 +1,12 @@
 package ch.heigvd.dil.util;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Géraud Silvestri
@@ -14,9 +15,9 @@ import org.junit.jupiter.api.Test;
 class MarkdownParserTest {
     private static final Path MARKDOWN_FOLDER = Path.of("src/test/resources/markdown");
 
-    private static final String EXCEPTED_CONTENT = "# Mon premier article\r\n\r\n"
-            + "## Mon sous-titre\r\n\r\n"
-            + "Le contenu de mon article.\r\n\r\n"
+    private static final String EXCEPTED_CONTENT = "# Mon premier article\n\n"
+            + "## Mon sous-titre\n\n"
+            + "Le contenu de mon article.\n\n"
             + "![Une image](./image.png)";
 
     @Test
@@ -25,7 +26,7 @@ class MarkdownParserTest {
         var config = result.getFirst();
         var content = result.getSecond();
 
-        assertEquals(EXCEPTED_CONTENT, content);
+        assertEquals(EXCEPTED_CONTENT, content.replace("\r\n", "\n"));
         assertEquals("Bob", config.get("author"));
         assertEquals("0.0.1", config.get("version"));
         assertEquals("today", config.get("date"));
@@ -50,8 +51,8 @@ class MarkdownParserTest {
         var content = result.getSecond();
         var content2 = result2.getSecond();
 
-        assertEquals(EXCEPTED_CONTENT, content);
-        assertEquals(EXCEPTED_CONTENT, content2);
+        assertEquals(EXCEPTED_CONTENT, content.replace("\r\n", "\n"));
+        assertEquals(EXCEPTED_CONTENT, content2.replace("\r\n", "\n"));
         assertTrue(config.isEmpty());
         assertTrue(config2.isEmpty());
     }
