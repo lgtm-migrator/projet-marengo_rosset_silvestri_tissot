@@ -53,9 +53,12 @@ class BuildCmdTest extends BaseCmdTest {
     }
 
     @Test
-    void itShouldBuildTheSite() {
+    void itShouldBuildTheSite() throws IOException {
         assertEquals(ExitCode.OK, execute(TEST_DIRECTORY.toString()));
         assertTrue(Files.exists(BUILD_PATH.resolve("index.html")));
+        assertEquals(
+                Files.readString(BUILD_SRC_DIRECTORY.resolve("index.html")).replace("\r\n", "\n"),
+                Files.readString(BUILD_PATH.resolve("index.html")));
     }
 
     @Test

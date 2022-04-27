@@ -5,9 +5,12 @@ import static picocli.CommandLine.*;
 import ch.heigvd.dil.converter.PathDirectoryConverter;
 import ch.heigvd.dil.util.FilesHelper;
 import ch.heigvd.dil.util.HTMLConverter;
+import ch.heigvd.dil.util.MarkdownParser;
+import ch.heigvd.dil.util.Tuple;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.stream.Stream;
 
@@ -79,8 +82,8 @@ public class BuildCmd implements Callable<Integer> {
     private void convertMdToHTML(Path file, Path dest) throws IOException {
         var htmlPath = dest.resolveSibling(dest.getFileName().toString().replace(".md", ".html"));
 
-        String content = Files.readString(file);
-        String converted = HTMLConverter.fromMarkdown(content);
-        Files.writeString(htmlPath, converted);
+        Tuple<Map<String, Object>, String> data = MarkdownParser.from(file);
+        String content = HTMLConverter.fromMarkdown(data.getSecond());
+        Files.writeString(htmlPath, content);
     }
 }
