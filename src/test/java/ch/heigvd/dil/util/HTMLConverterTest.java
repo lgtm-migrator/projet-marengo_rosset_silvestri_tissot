@@ -2,9 +2,9 @@ package ch.heigvd.dil.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -12,26 +12,15 @@ import org.junit.jupiter.api.Test;
  * @author Stéphane Marengo
  */
 public class HTMLConverterTest {
-    private static final String TEST_FILE = "src/test/resources/markdown_correct.md";
+    private static final Path TEST_FILE = Path.of("src/test/resources/markdown_correct.md");
 
     @Test
     public void itShouldConvertMDtoHTML() throws IOException {
-        String realConversion = "<h1>Mon premier article</h1>\n\n"
-                + "<h2>Mon sous-titre</h2>\n\n"
-                + "<p>Le contenu de mon article.</p>\n\n"
+        String realConversion = "<h1>Mon premier article</h1>\n"
+                + "<h2>Mon sous-titre</h2>\n"
+                + "<p>Le contenu de mon article.</p>\n"
                 + "<img src=\"./image.png\" alt=\"Une image\" />";
 
-        StringBuilder markdown = new StringBuilder();
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(TEST_FILE))) {
-            String line = reader.readLine();
-
-            while (line != null) {
-                markdown.append(line).append("\r\n");
-                line = reader.readLine();
-            }
-        }
-
-        assertEquals(HTMLConverter.fromMarkdown(markdown.toString()), realConversion);
+        assertEquals(realConversion, HTMLConverter.fromMarkdown(Files.readString(TEST_FILE)));
     }
 }

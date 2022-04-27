@@ -1,6 +1,8 @@
 package ch.heigvd.dil.util;
 
 
+import org.commonmark.node.AbstractVisitor;
+import org.commonmark.node.Image;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
@@ -20,25 +22,25 @@ public class HTMLConverter {
      */
     public static String fromMarkdown(String markdown) {
         Parser parser = Parser.builder().build();
+
         Node document = parser.parse(markdown);
+        document.accept(new ImageVisitor());
+
         HtmlRenderer htmlRenderer = HtmlRenderer.builder().build();
 
-        // Les balises img sont initialement encapsulées dans une balise <p>, il faut donc retirer ces balises <p>
-        String[] lines = htmlRenderer.render(document).split("\n");
-        StringBuilder result = new StringBuilder();
+        return htmlRenderer.render(document);
+    }
 
-        for (int i = 0; i < lines.length; i++) {
-            if (lines[i].contains("<img")) {
-                lines[i] = lines[i].replace("<p>", "");
-                lines[i] = lines[i].replace("</p>", "");
-            }
-
-            result.append(lines[i]);
-
-            // Ajout de retours à la ligne pour obtenir un résultat plus lisible
-            if (i < lines.length - 1) result.append("\n\n");
+    /**
+     * Visiteur utilisé pour supprimer les balises p des images.
+     */
+    private static class ImageVisitor extends AbstractVisitor {
+        @Override
+        public void visit(Image image) {
+            var parent = image.getParent();
+            var grandParent = parent.getParent();
+            parent.unlink();
+            grandParent.appendChild(image);
         }
-
-        return result.toString();
     }
 }
