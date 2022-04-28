@@ -6,7 +6,6 @@ import ch.heigvd.dil.util.FilesHelper;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.stream.Stream;
 import picocli.CommandLine;
 
 /**
@@ -58,7 +57,7 @@ abstract class BaseCmdTest {
     protected static void createBasicSite() throws IOException {
         Files.createDirectories(TEST_DIRECTORY);
 
-        copyDirectory(TEST_SRC_DIRECTORY, TEST_DIRECTORY);
+        FilesHelper.copyDirectory(TEST_SRC_DIRECTORY, TEST_DIRECTORY);
     }
 
     /**
@@ -76,7 +75,7 @@ abstract class BaseCmdTest {
      */
     protected static void buildBasicSite() throws IOException {
         createBasicSite();
-        copyDirectory(BUILD_SRC_DIRECTORY, BUILD_PATH);
+        FilesHelper.copyDirectory(BUILD_SRC_DIRECTORY, BUILD_PATH);
     }
 
     /**
@@ -86,25 +85,5 @@ abstract class BaseCmdTest {
     protected static void cleanBuild() throws IOException {
         FilesHelper.cleanDirectory(BUILD_PATH);
         Files.delete(BUILD_PATH);
-    }
-
-    /**
-     * Copie un répertoire.
-     * @param src le répertoire source
-     * @param dst le répertoire de destination
-     * @throws IOException si une erreur survient lors de la copie
-     */
-    protected static void copyDirectory(Path src, Path dst) throws IOException {
-        try (Stream<Path> walk = Files.walk(src)) {
-            walk.filter(Files::isRegularFile).forEach(p -> {
-                Path dest = dst.resolve(src.relativize(p));
-                try {
-                    Files.createDirectories(dest.getParent());
-                    Files.copy(p, dest);
-                } catch (IOException e) {
-                    System.err.println("Error while copying " + p + " to " + dest + ": " + e.getMessage());
-                }
-            });
-        }
     }
 }

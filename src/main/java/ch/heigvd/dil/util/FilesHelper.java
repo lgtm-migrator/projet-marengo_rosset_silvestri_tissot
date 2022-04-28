@@ -30,4 +30,24 @@ public class FilesHelper {
             });
         }
     }
+
+    /**
+     * Copie un répertoire.
+     * @param src le répertoire source
+     * @param dst le répertoire de destination
+     * @throws IOException si une erreur survient lors de la copie
+     */
+    public static void copyDirectory(Path src, Path dst) throws IOException {
+        try (Stream<Path> walk = Files.walk(src)) {
+            walk.filter(Files::isRegularFile).forEach(p -> {
+                Path dest = dst.resolve(src.relativize(p));
+                try {
+                    Files.createDirectories(dest.getParent());
+                    Files.copy(p, dest);
+                } catch (IOException e) {
+                    System.err.println("Error while copying " + p + " to " + dest + ": " + e.getMessage());
+                }
+            });
+        }
+    }
 }
