@@ -40,7 +40,35 @@ L'application peut désormais être lancée en utilisant la commande `site`.
 
 Lors du lancement de l'application, il est nécessaire de spécifier la sous-commande désirée parmi la liste suivante :
 
-- `new`
+- `init`
+  - Prend en paramètre le chemin relatif où l'on souhaite créer le site
+  - Crée le dossier spécifié s'il n'existe pas. Ajoute un fichier de configuration (.yaml) et un template de base du site (en markdown)
+  - Exemple : site init /monSite
+
+
 - `build`
+  - Prend en paramètre le chemin relatif d'un dossier contenant des fichiers markdown
+  - Crée un dossier `build` qui contiendra la représentation HTML des fichiers markdown contenu dans le dossier et les 
+    éventuelles images. Les fichiers de configurations (.yaml, .yml, etc..) ne seront pas placés dans le dossier `build` du site.
+    L'arborescence du dossier sera conservée dans le dossier `build`
+  - Exemple : site build /mon/site
+
 - `serve`
+  - Prend en paramètre le chemin relatif d'un site
+  - Permet de lancer un serveur WEB afin visualiser le site spécifié depuis un navigateur,
+    il est nécessaire de faire la compilation du site au préalable
+  - Exemple : site serve /mon/site
+
+
 - `clean`
+  - Prend en paramètre le chemin relatif d'un site
+  - Permet de supprimer le dossier `build` du site spécifié et son contenu
+  - Exemple : site clean /mon/site
+
+- `version`
+  - Permet d'afficher la version du logiciel `site`
+  - Exemple : site -V, --version
+
+- `help`
+  - Permet d'afficher les commandes disponible du logiciel et une brève description
+  - Exemple : site -h, --help
