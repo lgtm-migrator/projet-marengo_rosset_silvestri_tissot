@@ -12,5 +12,5 @@ jobs :
     steps:
       - uses : actions/checkout@v2
       - name : "Do the release"
-      - run : mvn clean install deploy -B
+        run : mvn clean install deploy -B
 
