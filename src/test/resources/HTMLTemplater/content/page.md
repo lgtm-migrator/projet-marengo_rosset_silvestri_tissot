@@ -1,6 +1,6 @@
 titre: Mon premier article
 auteur: Auteur
----
+----
 
 # Mon titre
 
