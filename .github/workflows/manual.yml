@@ -1,0 +1,15 @@
+name: "automatic-release"
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs : 
+  automatic-release :
+    runs-on: self-hosted
+    
+    steps:
+      - uses : actions/checkout@v2
+      - name : "Do the release"
+      - run : mvn clean install deploy -B
