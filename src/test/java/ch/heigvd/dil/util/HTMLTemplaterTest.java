@@ -53,7 +53,8 @@ class HTMLTemplaterTest {
     @Test
     void itShouldInjectTheContent() throws IOException {
         HTMLTemplater templater = new HTMLTemplater(CONFIG_FILE, TEMPLATE_DIR);
-        var content = templater.inject(CONTENT_DIR.resolve("page.md"));
-        assertEquals(Files.readString(TEST_SRC_DIRECTORY.resolve("output/excepted.html")), content);
+        var actual = templater.inject(CONTENT_DIR.resolve("page.md"));
+        var excepted = Files.readString(TEST_SRC_DIRECTORY.resolve("output/excepted.html"));
+        assertEquals(excepted.replace("\r\n", "\n"), actual.replace("\r\n", "\n"));
     }
 }

@@ -3,8 +3,6 @@ package ch.heigvd.dil.util;
 import com.github.jknack.handlebars.Context;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
-import com.github.jknack.handlebars.context.JavaBeanValueResolver;
-import com.github.jknack.handlebars.context.MapValueResolver;
 import com.github.jknack.handlebars.io.FileTemplateLoader;
 import org.yaml.snakeyaml.Yaml;
 
@@ -52,12 +50,12 @@ public class HTMLTemplater {
         throwIfNotExists(path, "Page does not exist: " + path);
 
         var page = MarkdownParser.from(path);
+        var content = HTMLConverter.fromMarkdown(page.getSecond());
 
         Context context = Context.newBuilder(new Object())
                 .combine("site", config)
                 .combine("page", page.getFirst())
-                .combine("content", page.getSecond())
-                .resolver(MapValueResolver.INSTANCE, JavaBeanValueResolver.INSTANCE)
+                .combine("content", content)
                 .build();
 
         return template.apply(context);
