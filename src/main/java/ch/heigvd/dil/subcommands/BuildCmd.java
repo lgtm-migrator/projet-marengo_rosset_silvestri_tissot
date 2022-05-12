@@ -4,13 +4,10 @@ import static picocli.CommandLine.*;
 
 import ch.heigvd.dil.converter.PathDirectoryConverter;
 import ch.heigvd.dil.util.FilesHelper;
-import ch.heigvd.dil.util.HTMLConverter;
-import ch.heigvd.dil.util.MarkdownParser;
-import ch.heigvd.dil.util.Tuple;
+import ch.heigvd.dil.util.HTMLTemplater;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.stream.Stream;
 
@@ -20,6 +17,8 @@ import java.util.stream.Stream;
 @Command(name = "build", description = "Builds the site")
 public class BuildCmd implements Callable<Integer> {
     public static final String BUILD_DIR = "build";
+    private static final String TEMPLATE_DIR = "templates";
+    private static final String CONFIG_FILE = "config.yaml";
 
     @Parameters(description = "Path to the sources directory", converter = PathDirectoryConverter.class)
     private Path path;
@@ -53,6 +52,8 @@ public class BuildCmd implements Callable<Integer> {
      * @throws IOException si une erreur IO survient
      */
     private void build(Path srcDir, Path destDir) throws IOException {
+        HTMLTemplater templater = new HTMLTemplater(srcDir.resolve(CONFIG_FILE), srcDir.resolve(TEMPLATE_DIR));
+
         try (Stream<Path> walk = Files.walk(srcDir)) {
             walk.filter(Files::isRegularFile)
                     .filter(p -> !p.toString().endsWith(".yml"))
@@ -61,7 +62,7 @@ public class BuildCmd implements Callable<Integer> {
                         var outPath = destDir.resolve(srcDir.relativize(p));
                         try {
                             if (p.toString().endsWith(".md")) {
-                                convertMdToHTML(p, outPath);
+                                convertMdToHTML(templater, p, outPath);
                             } else {
                                 Files.createDirectories(outPath.getParent());
                                 Files.copy(p, outPath);
@@ -79,11 +80,9 @@ public class BuildCmd implements Callable<Integer> {
      * @param dest le fichier de destination
      * @throws IOException si une erreur IO survient
      */
-    private void convertMdToHTML(Path file, Path dest) throws IOException {
+    private void convertMdToHTML(HTMLTemplater templater, Path file, Path dest) throws IOException {
         var htmlPath = dest.resolveSibling(dest.getFileName().toString().replace(".md", ".html"));
 
-        Tuple<Map<String, Object>, String> data = MarkdownParser.from(file);
-        String content = HTMLConverter.fromMarkdown(data.getSecond());
-        Files.writeString(htmlPath, content);
+        Files.writeString(htmlPath, templater.inject(file));
     }
 }
