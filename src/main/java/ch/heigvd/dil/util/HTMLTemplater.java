@@ -1,15 +1,15 @@
 package ch.heigvd.dil.util;
 
+
 import com.github.jknack.handlebars.Context;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.FileTemplateLoader;
-import org.yaml.snakeyaml.Yaml;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
+import org.yaml.snakeyaml.Yaml;
 
 /**
  * Classe permettant d'injecter du contenu dans des pages HTML selon un système de template.

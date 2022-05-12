@@ -58,7 +58,7 @@ class BuildCmdTest extends BaseCmdTest {
         assertTrue(Files.exists(BUILD_PATH.resolve("index.html")));
         assertEquals(
                 Files.readString(BUILD_SRC_DIRECTORY.resolve("index.html")).replace("\r\n", "\n"),
-                Files.readString(BUILD_PATH.resolve("index.html")));
+                Files.readString(BUILD_PATH.resolve("index.html")).replace("\r\n", "\n"));
     }
 
     @Test
