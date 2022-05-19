@@ -33,6 +33,7 @@ jobs:
           draft: false
           prerelease: false
           release_name: Release ${{ env.RELEASE_VERSION }}
+          tag_name: ${{ github.ref }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
