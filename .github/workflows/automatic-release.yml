@@ -33,6 +33,8 @@ jobs:
           draft: false
           prerelease: false
           release_name: Release ${{ env.RELEASE_VERSION }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
 
       - name: upload artifact
         uses: actions/upload-release-asset@v1
