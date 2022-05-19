@@ -33,7 +33,7 @@ jobs:
           draft: false
           prerelease: false
           release_name: Release ${{ env.RELEASE_VERSION }}
-          tag_name: ${{ env.RELEASE_VERSION }}
+          tag_name: ${{ github.ref }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
@@ -43,6 +43,6 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./target/site-0.0.1.zip
-          asset_name: site-${{ env.RELEASE_VERSION }}.zip
+          asset_path: ./target/site-${{ github.token }}.zip
+          asset_name: site-${{ github.token }}.zip
           asset_content_type: application/zip
