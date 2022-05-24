@@ -32,9 +32,9 @@ jobs:
           tag_name: ${{ github.ref }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          
+
       - name: Get the tag name
-        run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+        run: echo "TAG=${GITHUB_REF/refs\.tags\./}" >> $GITHUB_ENV
 
       - name: upload artifact
         uses: actions/upload-release-asset@v1
