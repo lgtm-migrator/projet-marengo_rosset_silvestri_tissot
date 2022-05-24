@@ -23,7 +23,7 @@ jobs:
         run: mvn clean install
 
       - name: Javadoc generation
-        run: mvn javadoc:javadoc
+        run: mvn clean javadoc:javadoc install
 
       - name: release
         uses: actions/create-release@v1
