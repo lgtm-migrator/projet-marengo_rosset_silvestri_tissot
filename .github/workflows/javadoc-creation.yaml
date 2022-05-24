@@ -16,4 +16,4 @@ jobs:
           java-version: '11'
           distribution: 'adopt'
       - name: Javadoc generation
-      - run: mvn javadoc:javadoc
+        run: mvn javadoc:javadoc
