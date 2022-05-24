@@ -1,4 +1,4 @@
-name: "automatic-release"
+name: Automatic Release
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   automatic-tag:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
@@ -22,19 +22,22 @@ jobs:
       - name: Build with Maven
         run: mvn clean install
 
+      - name: Javadoc generation
+        run: mvn javadoc:javadoc
+
       - name: release
         uses: actions/create-release@v1
         id: create_release
         with:
           draft: false
           prerelease: false
-          release_name: Release ${{ env.RELEASE_VERSION }}
+          release_name: Release ${{ github.event.ref }}
           tag_name: ${{ github.ref }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
       - name: Get the tag name
-        run: echo "TAG=${GITHUB_REF/refs\.tags\./}" >> $GITHUB_ENV
+        run: echo "VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
 
       - name: upload artifact
         uses: actions/upload-release-asset@v1
@@ -43,5 +46,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./target/site.zip
-          asset_name: site-$($env:GITHUB_REF -replace "refs.tags.").zip
+          asset_name: site-${{ env.VERSION }}.zip
           asset_content_type: application/zip
