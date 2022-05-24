@@ -14,7 +14,7 @@ import java.util.stream.Stream;
  */
 public class FilesHelper {
     /**
-     * Supprime le contenu du répertoire spécifié..
+     * Supprime le contenu du répertoire spécifié.
      * Ce dernier est créé s'il n'existe pas.
      *
      * @param directory le répertoire à vider
