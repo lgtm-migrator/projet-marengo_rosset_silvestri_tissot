@@ -32,6 +32,9 @@ jobs:
           tag_name: ${{ github.ref }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          
+      - name: Get the tag name
+        run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
 
       - name: upload artifact
         uses: actions/upload-release-asset@v1
@@ -40,5 +43,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./target/site.zip
-          asset_name: site-${{ github.ref }}-2.zip
+          asset_name: site-${{ env.TAG }}.zip
           asset_content_type: application/zip
