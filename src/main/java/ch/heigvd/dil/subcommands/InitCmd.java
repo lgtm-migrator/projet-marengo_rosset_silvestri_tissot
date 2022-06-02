@@ -2,15 +2,14 @@ package ch.heigvd.dil.subcommands;
 
 
 import ch.heigvd.dil.converter.PathConverter;
-import picocli.CommandLine.Command;
-import picocli.CommandLine.ExitCode;
-import picocli.CommandLine.Parameters;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.ExitCode;
+import picocli.CommandLine.Parameters;
 
 /**
  * @author Loïc Rosset

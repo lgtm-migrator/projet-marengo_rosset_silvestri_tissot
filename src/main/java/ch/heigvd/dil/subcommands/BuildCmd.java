@@ -1,16 +1,15 @@
 package ch.heigvd.dil.subcommands;
 
+import static picocli.CommandLine.*;
+
 import ch.heigvd.dil.converter.PathDirectoryConverter;
 import ch.heigvd.dil.util.FilesHelper;
 import ch.heigvd.dil.util.HTMLTemplater;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import java.util.stream.Stream;
-
-import static picocli.CommandLine.*;
 
 /**
  * @author Stéphane Marengo
