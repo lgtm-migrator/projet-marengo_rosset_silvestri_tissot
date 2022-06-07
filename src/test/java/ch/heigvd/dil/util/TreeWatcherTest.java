@@ -9,13 +9,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Marengo Stéphane
  */
 class TreeWatcherTest {
+    private static final int SLEEP_TIME = 2000;
     private static final Path ROOT_DIRECTORY = Path.of("rootTreeWatcher");
     private Path rootPath;
     private Path file;
@@ -23,9 +23,9 @@ class TreeWatcherTest {
     private Path ignoredFile;
     private TreeWatcher tw;
 
-    private boolean notified = false;
+    private boolean notified;
 
-    private Path expectedFileName;
+    private Path exceptedFile;
 
     @BeforeEach
     private void setUp() throws IOException {
@@ -36,11 +36,10 @@ class TreeWatcherTest {
         var ignored = Files.createDirectory(rootPath.resolve("ignored"));
         ignoredFile = Files.createFile(ignored.resolve("file3.txt"));
 
+        notified = false;
         tw = new TreeWatcher(
                 rootPath,
-                paths -> {
-                    if (Arrays.stream(paths).anyMatch(p -> p.equals(expectedFileName))) notified = true;
-                },
+                paths -> notified = Arrays.stream(paths).anyMatch(path -> path.equals(exceptedFile)),
                 ignored);
         tw.start();
     }
@@ -53,36 +52,61 @@ class TreeWatcherTest {
     }
 
     @Test
-    void itShouldNotifyOnModifiedFile() throws IOException {
-        expectedFileName = file.getFileName();
+    void itShouldNotifyOnModifiedFile() throws Exception {
+        exceptedFile = file;
         Files.writeString(file, "new content");
-        assertTrue(notified);
+        sleep();
+        assertNotified(true);
     }
 
     @Test
-    void itShouldNotifyOnDeletedFile() throws IOException {
-        expectedFileName = file.getFileName();
+    void itShouldNotifyOnDeletedFile() throws Exception {
+        exceptedFile = file;
         Files.delete(file);
-        assertTrue(notified);
+        sleep();
+        assertNotified(true);
     }
 
     @Test
-    void itShouldNotifyOnAddedFile() throws IOException {
-        var file = Files.createTempFile(rootPath, "", "");
-        expectedFileName = file.getFileName();
-        assertTrue(notified);
+    void itShouldNotifyOnAddedFile() throws Exception {
+        exceptedFile = Files.createTempFile(rootPath, "", "");
+        sleep();
+        assertNotified(true);
     }
 
     @Test
-    void itShouldNotifyOnModifiedFileInSubDirectory() throws IOException {
-        expectedFileName = nestedFile.getFileName();
+    void itShouldNotifyOnModifiedFileInSubDirectory() throws Exception {
+        exceptedFile = nestedFile;
         Files.writeString(nestedFile, "new content");
-        assertTrue(notified);
+        sleep();
+        assertNotified(true);
     }
 
     @Test
-    void itShouldNotNotifyIgnoredPaths() throws IOException {
+    void itShouldNotNotifyIgnoredPaths() throws Exception {
+        exceptedFile = ignoredFile;
         Files.writeString(ignoredFile, "new content");
-        assertFalse(notified);
+        sleep();
+        assertNotified(false);
+    }
+
+    @Test
+    void itShouldNotCrashOnDoubleStart() throws Exception {
+        tw.start();
+    }
+
+    @Test
+    void itShouldNotCrashOnDoubleStop() throws Exception {
+        tw.stop();
+        tw.stop();
+    }
+
+    private void sleep() throws InterruptedException {
+        Thread.sleep(SLEEP_TIME);
+    }
+
+    private void assertNotified(boolean expected) throws InterruptedException {
+        sleep();
+        assertEquals(expected, notified);
     }
 }
