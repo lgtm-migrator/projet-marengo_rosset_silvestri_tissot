@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
 
 import static java.nio.file.LinkOption.NOFOLLOW_LINKS;
 import static java.nio.file.StandardWatchEventKinds.*;
@@ -22,6 +25,7 @@ public class TreeWatcher {
     private final ChangeListener listener;
     private WatchService watcher;
     private Map<WatchKey, Path> keys;
+    private CompletableFuture<Void> future;
     private boolean isRunning;
 
     /**
@@ -50,13 +54,44 @@ public class TreeWatcher {
 
     /**
      * Démarre le watcher.
+     * @throws IOException si une erreur I/O survient
      */
-    public void start() {}
+    public void start() throws IOException {
+        if (isRunning) return;
+
+        watcher = FileSystems.getDefault().newWatchService();
+        keys = new HashMap<>();
+
+        try {
+            registerRoot(root);
+        } catch (IOException e) {
+            throw new IOException("Cannot register directory: " + e.getMessage(), e);
+        }
+
+        // Suppression des événements déjà en attente.
+        keys.forEach((key, path) -> key.pollEvents());
+
+        future = CompletableFuture.runAsync(this::run);
+        isRunning = true;
+    }
 
     /**
      * Arrête le watcher.
+     * @throws IOException si une erreur I/O survient
      */
-    public void stop() {}
+    public void stop() throws IOException {
+        if (!isRunning) return;
+
+        future.cancel(true);
+        try {
+            future.join();
+        } catch (CancellationException ignored) {
+
+        } finally {
+            watcher.close();
+        }
+        isRunning = false;
+    }
 
     /**
      * Enregistre l'arborescence complète du dossier passé en paramètre dans le watcher.
