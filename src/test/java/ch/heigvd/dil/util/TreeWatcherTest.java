@@ -1,20 +1,21 @@
 package ch.heigvd.dil.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Marengo Stéphane
  */
 class TreeWatcherTest {
-    private static final int SLEEP_TIME = 2000;
+    private static final int SLEEP_TIME = 5000;
     private static final Path ROOT_DIRECTORY = Path.of("rootTreeWatcher");
     private Path rootPath;
     private Path file;
