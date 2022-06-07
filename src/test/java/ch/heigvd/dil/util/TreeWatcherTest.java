@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author Marengo Stéphane
  */
 class TreeWatcherTest {
-    private static final int SLEEP_TIME = 5000;
+    private static final int SLEEP_TIME = 10000;
     private static final Path ROOT_DIRECTORY = Path.of("rootTreeWatcher");
     private Path rootPath;
     private Path file;
