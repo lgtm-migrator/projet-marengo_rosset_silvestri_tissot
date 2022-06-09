@@ -1,17 +1,18 @@
 package ch.heigvd.dil.subcommands;
 
-import static picocli.CommandLine.*;
-
 import ch.heigvd.dil.converter.PathDirectoryConverter;
 import ch.heigvd.dil.util.FilesHelper;
 import ch.heigvd.dil.util.HTMLTemplater;
 import ch.heigvd.dil.util.TreeWatcher;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
 import java.util.stream.Stream;
+
+import static picocli.CommandLine.*;
 
 /**
  * @author Stéphane Marengo
@@ -135,7 +136,8 @@ public class BuildCmd implements Callable<Integer> {
      * @throws IOException si une erreur IO survient
      */
     private void startWatching() throws IOException {
-        watcher = new TreeWatcher(srcPath, this::watcherHandler, srcPath.resolve(BUILD_DIR));
+        watcher = new TreeWatcher(
+                srcPath, this::watcherHandler, srcPath.resolve(BUILD_DIR), srcPath.resolve(TEMPLATE_DIR));
         watcher.start();
     }
 
