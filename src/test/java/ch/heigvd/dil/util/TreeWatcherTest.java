@@ -1,6 +1,5 @@
 package ch.heigvd.dil.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,16 +13,19 @@ import org.junit.jupiter.api.Test;
  * @author Marengo Stéphane
  */
 class TreeWatcherTest {
-    private static final int SLEEP_TIME = 10000;
+    /**
+     * Interface utilisée pour définir une méthode pouvant throw une exception.
+     */
+    interface Tester {
+        void run() throws Exception;
+    }
+
     private static final Path ROOT_DIRECTORY = Path.of("rootTreeWatcher");
     private Path rootPath;
     private Path file;
     private Path nestedFile;
     private Path ignoredFile;
     private TreeWatcher tw;
-
-    private boolean notified;
-
     private Path exceptedFile;
 
     @BeforeEach
@@ -35,10 +37,14 @@ class TreeWatcherTest {
         var ignored = Files.createDirectory(rootPath.resolve("ignored"));
         ignoredFile = Files.createFile(ignored.resolve("file3.txt"));
 
-        notified = false;
         tw = new TreeWatcher(
                 rootPath,
-                paths -> notified = Arrays.stream(paths).anyMatch(path -> path.equals(exceptedFile)),
+                paths -> {
+                    if (Arrays.stream(paths).noneMatch(path -> path.equals(exceptedFile))) return;
+                    synchronized (this) {
+                        notify();
+                    }
+                },
                 ignored);
         tw.start();
     }
@@ -50,43 +56,40 @@ class TreeWatcherTest {
         tw.stop();
     }
 
+    /**
+     * Teste la notification suite à une action
+     * @param exceptedFile le fichier qui doit être (ou non) notifié
+     * @param tester l'action à exécuter
+     * @throws Exception si une exception est levée
+     */
+    private void test(Path exceptedFile, Tester tester) throws Exception {
+        this.exceptedFile = exceptedFile;
+
+        synchronized (this) {
+            tester.run();
+            wait();
+        }
+    }
+
     @Test
     void itShouldNotifyOnModifiedFile() throws Exception {
-        exceptedFile = file;
-        Files.writeString(file, "new content");
-        sleep();
-        assertNotified(true);
+        test(file, () -> Files.writeString(file, "modified"));
     }
 
     @Test
     void itShouldNotifyOnDeletedFile() throws Exception {
-        exceptedFile = file;
-        Files.delete(file);
-        sleep();
-        assertNotified(true);
+        test(file, () -> Files.delete(file));
     }
 
     @Test
     void itShouldNotifyOnAddedFile() throws Exception {
-        exceptedFile = Files.createTempFile(rootPath, "", "");
-        sleep();
-        assertNotified(true);
+        Path newFile = rootPath.resolve("newFile.txt");
+        test(newFile, () -> Files.createFile(newFile));
     }
 
     @Test
     void itShouldNotifyOnModifiedFileInSubDirectory() throws Exception {
-        exceptedFile = nestedFile;
-        Files.writeString(nestedFile, "new content");
-        sleep();
-        assertNotified(true);
-    }
-
-    @Test
-    void itShouldNotNotifyIgnoredPaths() throws Exception {
-        exceptedFile = ignoredFile;
-        Files.writeString(ignoredFile, "new content");
-        sleep();
-        assertNotified(false);
+        test(nestedFile, () -> Files.writeString(nestedFile, "new content"));
     }
 
     @Test
@@ -98,14 +101,5 @@ class TreeWatcherTest {
     void itShouldNotCrashOnDoubleStop() throws Exception {
         tw.stop();
         tw.stop();
-    }
-
-    private void sleep() throws InterruptedException {
-        Thread.sleep(SLEEP_TIME);
-    }
-
-    private void assertNotified(boolean expected) throws InterruptedException {
-        sleep();
-        assertEquals(expected, notified);
     }
 }
