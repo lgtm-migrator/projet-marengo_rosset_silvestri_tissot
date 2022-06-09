@@ -83,6 +83,7 @@ public class BuildCmd implements Callable<Integer> {
     private void convertMdToHTML(HTMLTemplater templater, Path file, Path dest) throws IOException {
         var htmlPath = dest.resolveSibling(dest.getFileName().toString().replace(".md", ".html"));
 
+        Files.createDirectories(htmlPath.getParent());
         Files.writeString(htmlPath, templater.inject(file));
     }
 }
