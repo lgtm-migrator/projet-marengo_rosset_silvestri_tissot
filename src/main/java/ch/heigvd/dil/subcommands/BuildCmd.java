@@ -5,9 +5,11 @@ import static picocli.CommandLine.*;
 import ch.heigvd.dil.converter.PathDirectoryConverter;
 import ch.heigvd.dil.util.FilesHelper;
 import ch.heigvd.dil.util.HTMLTemplater;
+import ch.heigvd.dil.util.TreeWatcher;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Scanner;
 import java.util.concurrent.Callable;
 import java.util.stream.Stream;
 
@@ -16,12 +18,21 @@ import java.util.stream.Stream;
  */
 @Command(name = "build", description = "Builds the site")
 public class BuildCmd implements Callable<Integer> {
+    private static final String STOP_KEYWORD = "exit";
     public static final String BUILD_DIR = "build";
     private static final String TEMPLATE_DIR = "templates";
     private static final String CONFIG_FILE = "config.yaml";
 
     @Parameters(description = "Path to the sources directory", converter = PathDirectoryConverter.class)
     private Path path;
+
+    @Option(
+            names = {"-w", "--watch"},
+            description = "Watch for changes and rebuild the site",
+            defaultValue = "false")
+    private boolean isWatching;
+
+    private TreeWatcher watcher;
 
     @Override
     public Integer call() {
@@ -41,6 +52,16 @@ public class BuildCmd implements Callable<Integer> {
         }
 
         System.out.println("Site built successfully to " + out.toAbsolutePath());
+
+        if (isWatching) {
+            try {
+                startWatching();
+                waitForExit();
+            } catch (IOException e) {
+                System.err.println("An error occurred while watching for changes: " + e.getMessage());
+                return ExitCode.SOFTWARE;
+            }
+        }
 
         return ExitCode.OK;
     }
@@ -85,5 +106,37 @@ public class BuildCmd implements Callable<Integer> {
 
         Files.createDirectories(htmlPath.getParent());
         Files.writeString(htmlPath, templater.inject(file));
+    }
+
+    /**
+     * Démarre le watcher.
+     * @throws IOException si une erreur IO survient
+     */
+    private void startWatching() throws IOException {
+        watcher = new TreeWatcher(
+                path,
+                paths -> {
+                    System.out.println("Rebuilding site...");
+                    try {
+                        build(path, path.resolve(BUILD_DIR));
+                    } catch (IOException e) {
+                        System.err.println("An error occurred while building the site: " + e.getMessage());
+                    }
+                },
+                path.resolve(BUILD_DIR));
+        System.out.println("Watching for changes in " + path.toAbsolutePath());
+        watcher.start();
+    }
+
+    /**
+     * Boucle jusqu'à ce que l'utilisateur entre STOP_KEYWORD.
+     * @throws IOException si une erreur IO survient
+     */
+    private void waitForExit() throws IOException {
+        Scanner scanner = new Scanner(System.in);
+        while (!scanner.hasNext(STOP_KEYWORD)) {
+            scanner.nextLine();
+        }
+        watcher.stop();
     }
 }
