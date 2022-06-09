@@ -60,6 +60,8 @@ public class BuildCmd implements Callable<Integer> {
         if (isWatching) {
             try {
                 startWatching();
+                System.out.println("Watching for changes in " + srcPath.toAbsolutePath());
+                System.out.println("Type '" + STOP_KEYWORD + "' to stop.");
                 waitForExit();
             } catch (IOException e) {
                 System.err.println("An error occurred while watching for changes: " + e.getMessage());
@@ -134,7 +136,6 @@ public class BuildCmd implements Callable<Integer> {
      */
     private void startWatching() throws IOException {
         watcher = new TreeWatcher(srcPath, this::watcherHandler, srcPath.resolve(BUILD_DIR));
-        System.out.println("Watching for changes in " + srcPath.toAbsolutePath());
         watcher.start();
     }
 
