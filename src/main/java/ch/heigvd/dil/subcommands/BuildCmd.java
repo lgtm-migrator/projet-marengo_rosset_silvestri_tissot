@@ -24,7 +24,11 @@ public class BuildCmd implements Callable<Integer> {
     static final String CONFIG_FILE = "config.yaml";
 
     @Parameters(description = "Path to the sources directory", converter = PathDirectoryConverter.class)
-    private Path path;
+    private Path srcPath;
+
+    private Path outPath;
+
+    private HTMLTemplater templater;
 
     @Option(
             names = {"-w", "--watch"},
@@ -36,22 +40,22 @@ public class BuildCmd implements Callable<Integer> {
 
     @Override
     public Integer call() {
-        Path out = path.resolve(BUILD_DIR);
+        outPath = srcPath.resolve(BUILD_DIR);
         try {
-            FilesHelper.cleanDirectory(out);
+            FilesHelper.cleanDirectory(outPath);
         } catch (IOException e) {
             System.err.println("An error occurred while creating the directory: " + e.getMessage());
             return ExitCode.SOFTWARE;
         }
 
         try {
-            build(path, out);
+            build();
         } catch (IOException e) {
             System.err.println("An error occurred while building the site: " + e.getMessage());
             return ExitCode.SOFTWARE;
         }
 
-        System.out.println("Site built successfully to " + out.toAbsolutePath());
+        System.out.println("Site built successfully to " + outPath.toAbsolutePath());
 
         if (isWatching) {
             try {
@@ -69,41 +73,44 @@ public class BuildCmd implements Callable<Integer> {
     /**
      * Construit le site.
      *
-     * @param srcDir  le dossier contenant les sources
-     * @param destDir le dossier de destination
      * @throws IOException si une erreur IO survient
      */
-    private void build(Path srcDir, Path destDir) throws IOException {
-        HTMLTemplater templater = new HTMLTemplater(srcDir.resolve(CONFIG_FILE), srcDir.resolve(TEMPLATE_DIR));
+    private void build() throws IOException {
+        templater = new HTMLTemplater(srcPath.resolve(CONFIG_FILE), srcPath.resolve(TEMPLATE_DIR));
 
-        try (Stream<Path> walk = Files.walk(srcDir)) {
+        try (Stream<Path> walk = Files.walk(srcPath)) {
             walk.filter(Files::isRegularFile)
                     .filter(p -> !p.toString().endsWith(".yml"))
                     .filter(p -> !p.toString().endsWith(".yaml"))
-                    .forEach(p -> {
-                        var outPath = destDir.resolve(srcDir.relativize(p));
-                        try {
-                            buildFile(p, outPath, templater);
-                        } catch (IOException e) {
-                            System.err.println("An error occurred while copying the file: " + e.getMessage());
-                        }
-                    });
+                    .forEach(this::buildFile);
         }
+    }
+
+    /**
+     * Obtient le chemin de destination du fichier donné.
+     * @param file le fichier
+     * @return le chemin de destination
+     */
+    private Path getOutputpath(Path file) {
+        return outPath.resolve(srcPath.relativize(file));
     }
 
     /**
      * Copie le fichier spécifié et le convertit en HTML si nécessaire.
      * @param srcFile le fichier à copier
-     * @param destFile le fichier de destination
-     * @param templater le templater utilisé pour convertir le fichier
-     * @throws IOException si une erreur IO survient
      */
-    private void buildFile(Path srcFile, Path destFile, HTMLTemplater templater) throws IOException {
-        if (srcFile.toString().endsWith(".md")) {
-            convertMdToHTML(templater, srcFile, destFile);
-        } else {
-            Files.createDirectories(destFile.getParent());
-            Files.copy(srcFile, destFile);
+    private void buildFile(Path srcFile) {
+        var outPath = getOutputpath(srcFile);
+
+        try {
+            if (srcFile.toString().endsWith(".md")) {
+                convertMdToHTML(templater, srcFile, outPath);
+            } else {
+                Files.createDirectories(outPath.getParent());
+                Files.copy(srcFile, outPath);
+            }
+        } catch (IOException e) {
+            System.err.println("An error occurred while copying the file: " + e.getMessage());
         }
     }
 
@@ -126,19 +133,38 @@ public class BuildCmd implements Callable<Integer> {
      * @throws IOException si une erreur IO survient
      */
     private void startWatching() throws IOException {
-        watcher = new TreeWatcher(
-                path,
-                paths -> {
-                    System.out.println("Rebuilding site...");
-                    try {
-                        build(path, path.resolve(BUILD_DIR));
-                    } catch (IOException e) {
-                        System.err.println("An error occurred while building the site: " + e.getMessage());
-                    }
-                },
-                path.resolve(BUILD_DIR));
-        System.out.println("Watching for changes in " + path.toAbsolutePath());
+        watcher = new TreeWatcher(srcPath, this::watcherHandler, srcPath.resolve(BUILD_DIR));
+        System.out.println("Watching for changes in " + srcPath.toAbsolutePath());
         watcher.start();
+    }
+
+    /**
+     * Handler pour le watcher.
+     * @param added les fichiers ajoutés
+     * @param modified les fichiers modifiés
+     * @param deleted les fichiers supprimés
+     */
+    private void watcherHandler(Path[] added, Path[] modified, Path[] deleted) {
+        System.out.println("Rebuilding site...");
+
+        for (Path p : added) {
+            buildFile(p);
+        }
+        for (Path p : modified) {
+            buildFile(p);
+        }
+        for (Path p : deleted) {
+            var outPath = getOutputpath(p);
+            try {
+                if (Files.isDirectory(p)) {
+                    FilesHelper.cleanDirectory(outPath);
+                }
+                Files.delete(outPath);
+            } catch (IOException e) {
+                System.err.println("An error occurred while deleting the file: " + e.getMessage());
+            }
+        }
+        System.out.println("...done");
     }
 
     /**
