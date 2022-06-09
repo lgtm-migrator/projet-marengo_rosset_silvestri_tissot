@@ -94,9 +94,9 @@ public class InitCmdTest extends BaseCmdTest {
         assertTrue(Files.isRegularFile(indexFile));
 
         String basicSiteContent = Files.readString(indexFile);
-        String defaultContent = Files.readString(MAIN_RESOURCES.resolve("template.default.html"));
+        String defaultContent = Files.readString(MAIN_RESOURCES.resolve("layout.default.html"));
 
-        assertNotEquals(basicSiteContent, defaultContent);
+        assertNotEquals(defaultContent, basicSiteContent);
         assertEquals(
                 Files.readString(TEST_SRC_DIRECTORY.resolve(BuildCmd.TEMPLATE_DIR + "/layout.html")), basicSiteContent);
     }

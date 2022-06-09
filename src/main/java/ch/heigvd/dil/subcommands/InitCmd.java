@@ -20,7 +20,8 @@ public class InitCmd implements Callable<Integer> {
 
     private static final String CONFIG_FILE = "config.default.yaml";
     private static final String INDEX_FILE = "index.default.md";
-    private static final String TEMPLATE_FILE = "template.default.html";
+    private static final String LAYOUT_FILE = "layout.default.html";
+    private static final String MENU_FILE = "menu.default.html";
 
     @Parameters(description = "Path to the new site", converter = PathConverter.class)
     private Path path;
@@ -38,7 +39,8 @@ public class InitCmd implements Callable<Integer> {
         try {
             copyFileIfMissing(CONFIG_FILE, path.resolve("config.yaml"));
             copyFileIfMissing(INDEX_FILE, path.resolve("index.md"));
-            copyFileIfMissing(TEMPLATE_FILE, path.resolve(BuildCmd.TEMPLATE_DIR + "/layout.html"));
+            copyFileIfMissing(LAYOUT_FILE, path.resolve(BuildCmd.TEMPLATE_DIR + "/layout.html"));
+            copyFileIfMissing(MENU_FILE, path.resolve(BuildCmd.TEMPLATE_DIR + "/menu.html"));
         } catch (IOException e) {
             System.err.println("Error while creating the default files: " + e.getMessage());
             return ExitCode.SOFTWARE;
