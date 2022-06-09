@@ -1,6 +1,5 @@
 package ch.heigvd.dil.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -27,7 +26,6 @@ class TreeWatcherTest {
     private Path nestedFile;
     private Path ignoredFile;
     private TreeWatcher tw;
-    private boolean notified;
     private Path exceptedFile;
 
     @BeforeEach
@@ -39,11 +37,10 @@ class TreeWatcherTest {
         var ignored = Files.createDirectory(rootPath.resolve("ignored"));
         ignoredFile = Files.createFile(ignored.resolve("file3.txt"));
 
-        notified = false;
         tw = new TreeWatcher(
                 rootPath,
                 paths -> {
-                    notified = Arrays.stream(paths).anyMatch(path -> path.equals(exceptedFile));
+                    if (Arrays.stream(paths).noneMatch(path -> path.equals(exceptedFile))) return;
                     synchronized (this) {
                         notify();
                     }
@@ -63,37 +60,35 @@ class TreeWatcherTest {
      * Teste la notification suite à une action
      * @param exceptedFile le fichier qui doit être (ou non) notifié
      * @param tester l'action à exécuter
-     * @param exceptedNotified le résultat attendu (notifié ou non)
      * @throws Exception si une exception est levée
      */
-    private void test(Path exceptedFile, Tester tester, boolean exceptedNotified) throws Exception {
+    private void test(Path exceptedFile, Tester tester) throws Exception {
         this.exceptedFile = exceptedFile;
         tester.run();
         synchronized (this) {
             wait();
         }
-        assertEquals(exceptedNotified, notified);
     }
 
     @Test
     void itShouldNotifyOnModifiedFile() throws Exception {
-        test(file, () -> Files.writeString(file, "modified"), true);
+        test(file, () -> Files.writeString(file, "modified"));
     }
 
     @Test
     void itShouldNotifyOnDeletedFile() throws Exception {
-        test(file, () -> Files.delete(file), true);
+        test(file, () -> Files.delete(file));
     }
 
     @Test
     void itShouldNotifyOnAddedFile() throws Exception {
         Path newFile = rootPath.resolve("newFile.txt");
-        test(newFile, () -> Files.createFile(newFile), true);
+        test(newFile, () -> Files.createFile(newFile));
     }
 
     @Test
     void itShouldNotifyOnModifiedFileInSubDirectory() throws Exception {
-        test(nestedFile, () -> Files.writeString(nestedFile, "new content"), true);
+        test(nestedFile, () -> Files.writeString(nestedFile, "new content"));
     }
 
     @Test
