@@ -21,8 +21,6 @@ class TreeWatcherTest {
         void run() throws Exception;
     }
 
-    private static final int TIMEOUT = 10000; // Le temps d'attente maximal (tests sans notifications)
-
     private static final Path ROOT_DIRECTORY = Path.of("rootTreeWatcher");
     private Path rootPath;
     private Path file;
@@ -72,7 +70,7 @@ class TreeWatcherTest {
         this.exceptedFile = exceptedFile;
         tester.run();
         synchronized (this) {
-            wait(TIMEOUT);
+            wait();
         }
         assertEquals(exceptedNotified, notified);
     }
@@ -96,11 +94,6 @@ class TreeWatcherTest {
     @Test
     void itShouldNotifyOnModifiedFileInSubDirectory() throws Exception {
         test(nestedFile, () -> Files.writeString(nestedFile, "new content"), true);
-    }
-
-    @Test
-    void itShouldNotNotifyIgnoredPaths() throws Exception {
-        test(ignoredFile, () -> Files.writeString(ignoredFile, "new content"), false);
     }
 
     @Test
