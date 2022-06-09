@@ -17,8 +17,8 @@ import java.util.stream.Stream;
 @Command(name = "build", description = "Builds the site")
 public class BuildCmd implements Callable<Integer> {
     public static final String BUILD_DIR = "build";
-    private static final String TEMPLATE_DIR = "templates";
-    private static final String CONFIG_FILE = "config.yaml";
+    static final String TEMPLATE_DIR = "templates";
+    static final String CONFIG_FILE = "config.yaml";
 
     @Parameters(description = "Path to the sources directory", converter = PathDirectoryConverter.class)
     private Path path;
@@ -47,7 +47,8 @@ public class BuildCmd implements Callable<Integer> {
 
     /**
      * Construit le site.
-     * @param srcDir le dossier contenant les sources
+     *
+     * @param srcDir  le dossier contenant les sources
      * @param destDir le dossier de destination
      * @throws IOException si une erreur IO survient
      */
@@ -76,6 +77,7 @@ public class BuildCmd implements Callable<Integer> {
 
     /**
      * Converti le fichier markdown donné en HTML dans le dossier de build.
+     *
      * @param file le fichier markdown à convertir
      * @param dest le fichier de destination
      * @throws IOException si une erreur IO survient

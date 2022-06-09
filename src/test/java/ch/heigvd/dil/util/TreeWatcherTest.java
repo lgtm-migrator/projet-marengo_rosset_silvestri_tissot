@@ -40,8 +40,8 @@ class TreeWatcherTest {
         tw = new TreeWatcher(
                 rootPath,
                 paths -> {
-                    if (Arrays.stream(paths).noneMatch(path -> path.equals(exceptedFile))) return;
                     synchronized (this) {
+                        if (Arrays.stream(paths).noneMatch(path -> path.equals(exceptedFile))) return;
                         notify();
                     }
                 },
@@ -62,13 +62,10 @@ class TreeWatcherTest {
      * @param tester l'action à exécuter
      * @throws Exception si une exception est levée
      */
-    private void test(Path exceptedFile, Tester tester) throws Exception {
+    private synchronized void test(Path exceptedFile, Tester tester) throws Exception {
         this.exceptedFile = exceptedFile;
-
-        synchronized (this) {
-            tester.run();
-            wait();
-        }
+        tester.run();
+        wait();
     }
 
     @Test

@@ -1,7 +1,7 @@
 package ch.heigvd.dil.subcommands;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static picocli.CommandLine.*;
+import static picocli.CommandLine.ExitCode;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -34,14 +34,20 @@ public class InitCmdTest extends BaseCmdTest {
         assertFalse(Files.isDirectory(TEST_DIRECTORY));
         assertEquals(ExitCode.OK, execute(TEST_DIRECTORY.toString()));
         assertTrue(Files.isDirectory(TEST_DIRECTORY));
+        assertTrue(Files.isDirectory(TEST_DIRECTORY.resolve(BuildCmd.TEMPLATE_DIR)));
     }
 
     @Test
     void itShouldCreateTheDefaultSite() {
         assertFalse(Files.isDirectory(TEST_DIRECTORY));
+        assertFalse(Files.isDirectory(TEST_DIRECTORY.resolve(BuildCmd.TEMPLATE_DIR)));
         assertEquals(ExitCode.OK, execute(TEST_DIRECTORY.toString()));
+        assertEquals(
+                ExitCode.OK,
+                execute(TEST_DIRECTORY.resolve(BuildCmd.TEMPLATE_DIR).toString()));
         assertTrue(Files.isRegularFile(TEST_DIRECTORY.resolve("index.md")));
         assertTrue(Files.isRegularFile(TEST_DIRECTORY.resolve("config.yaml")));
+        assertTrue(Files.isRegularFile(TEST_DIRECTORY.resolve(BuildCmd.TEMPLATE_DIR + "/layout.html")));
     }
 
     @Test
@@ -74,5 +80,24 @@ public class InitCmdTest extends BaseCmdTest {
 
         assertNotEquals(basicSiteContent, defaultContent);
         assertEquals(Files.readString(TEST_SRC_DIRECTORY.resolve("index.md")), basicSiteContent);
+    }
+
+    @Test
+    void itShouldNotOverwriteExistingLayout() throws IOException {
+        createBasicSite();
+        assertEquals(
+                ExitCode.OK,
+                execute(TEST_DIRECTORY.resolve(BuildCmd.TEMPLATE_DIR).toString()));
+
+        var indexFile = TEST_DIRECTORY.resolve(BuildCmd.TEMPLATE_DIR + "/layout.html");
+
+        assertTrue(Files.isRegularFile(indexFile));
+
+        String basicSiteContent = Files.readString(indexFile);
+        String defaultContent = Files.readString(MAIN_RESOURCES.resolve("template.default.html"));
+
+        assertNotEquals(basicSiteContent, defaultContent);
+        assertEquals(
+                Files.readString(TEST_SRC_DIRECTORY.resolve(BuildCmd.TEMPLATE_DIR + "/layout.html")), basicSiteContent);
     }
 }
