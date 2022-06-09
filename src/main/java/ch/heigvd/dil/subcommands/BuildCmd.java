@@ -82,16 +82,27 @@ public class BuildCmd implements Callable<Integer> {
                     .forEach(p -> {
                         var outPath = destDir.resolve(srcDir.relativize(p));
                         try {
-                            if (p.toString().endsWith(".md")) {
-                                convertMdToHTML(templater, p, outPath);
-                            } else {
-                                Files.createDirectories(outPath.getParent());
-                                Files.copy(p, outPath);
-                            }
+                            buildFile(p, outPath, templater);
                         } catch (IOException e) {
                             System.err.println("An error occurred while copying the file: " + e.getMessage());
                         }
                     });
+        }
+    }
+
+    /**
+     * Copie le fichier spécifié et le convertit en HTML si nécessaire.
+     * @param srcFile le fichier à copier
+     * @param destFile le fichier de destination
+     * @param templater le templater utilisé pour convertir le fichier
+     * @throws IOException si une erreur IO survient
+     */
+    private void buildFile(Path srcFile, Path destFile, HTMLTemplater templater) throws IOException {
+        if (srcFile.toString().endsWith(".md")) {
+            convertMdToHTML(templater, srcFile, destFile);
+        } else {
+            Files.createDirectories(destFile.getParent());
+            Files.copy(srcFile, destFile);
         }
     }
 
