@@ -72,4 +72,18 @@ class BuildCmdTest extends BaseCmdTest {
         assertEquals(ExitCode.OK, execute(TEST_DIRECTORY.toString()));
         assertTrue(Files.exists(BUILD_PATH.resolve(Path.of("images", "image.jpg"))));
     }
+
+    @Test
+    void itShouldRebuildWhenWatching() throws Exception {
+        execute(TEST_DIRECTORY.toString(), "--watch");
+        assertEquals(
+                Files.readString(BUILD_SRC_DIRECTORY.resolve("index.html")).replace("\r\n", "\n"),
+                Files.readString(BUILD_PATH.resolve("index.html")).replace("\r\n", "\n"));
+
+        Files.writeString(TEST_DIRECTORY.resolve("test.html"), "contenu");
+        Thread.sleep(10000);
+        assertEquals(
+                Files.readString(TEST_DIRECTORY.resolve("test.html")).replace("\r\n", "\n"),
+                Files.readString(BUILD_PATH.resolve("test.html")).replace("\r\n", "\n"));
+    }
 }
