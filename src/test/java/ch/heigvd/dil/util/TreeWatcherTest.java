@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,10 +40,14 @@ class TreeWatcherTest {
 
         tw = new TreeWatcher(
                 rootPath,
-                paths -> {
+                (added, modified, deleted) -> {
                     synchronized (this) {
-                        if (Arrays.stream(paths).noneMatch(path -> path.equals(exceptedFile))) return;
-                        notify();
+                        var matched = Stream.of(added, modified, deleted).anyMatch(paths -> {
+                            return Arrays.stream(paths).anyMatch(path -> path.equals(exceptedFile));
+                        });
+                        if (matched) {
+                            notify();
+                        }
                     }
                 },
                 ignored);
