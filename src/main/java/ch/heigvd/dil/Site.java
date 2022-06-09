@@ -12,7 +12,7 @@ import picocli.CommandLine.IVersionProvider;
 
 @Command(
         name = "site",
-        subcommands = {CleanCmd.class, BuildCmd.class, ServeCmd.class, InitCmd.class},
+        subcommands = {CleanCmd.class, BuildCmd.class, ServeCmd.class, InitCmd.class, PublishCmd.class},
         mixinStandardHelpOptions = true,
         versionProvider = Site.VersionProvider.class)
 public class Site implements Callable<Integer> {
