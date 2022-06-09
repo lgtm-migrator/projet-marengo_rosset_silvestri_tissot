@@ -64,8 +64,9 @@ class TreeWatcherTest {
      */
     private void test(Path exceptedFile, Tester tester) throws Exception {
         this.exceptedFile = exceptedFile;
-        tester.run();
+
         synchronized (this) {
+            tester.run();
             wait();
         }
     }
