@@ -6,9 +6,7 @@ import static java.nio.file.StandardWatchEventKinds.*;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 
@@ -34,9 +32,11 @@ public class TreeWatcher {
     public interface ChangeListener {
         /**
          * Callback appelée lorsque des modifications sont observées.
-         * @param paths les chemins des fichiers modifiés.
+         * @param modified les fichiers modifiés
+         * @param added les fichiers ajoutés
+         * @param deleted les fichiers supprimés
          */
-        void onChange(Path[] paths);
+        void onChange(Path[] modified, Path[] added, Path[] deleted);
     }
 
     /**
@@ -153,7 +153,10 @@ public class TreeWatcher {
                 continue;
             }
 
-            Path[] children = processEvents(key, dir);
+            List<Path> added = new LinkedList<>();
+            List<Path> modified = new LinkedList<>();
+            List<Path> removed = new LinkedList<>();
+            processEvents(key, dir, added, modified, removed);
 
             boolean valid = key.reset();
             if (!valid) {
@@ -163,19 +166,24 @@ public class TreeWatcher {
                 }
             }
 
-            if (children.length > 0) listener.onChange(children);
+            if (!added.isEmpty() || !modified.isEmpty() || !removed.isEmpty()) {
+                listener.onChange(
+                        added.toArray(Path[]::new), modified.toArray(Path[]::new), removed.toArray(Path[]::new));
+            }
         }
     }
 
     /**
      * Traite les événements de la clé donnée.
-     * @param key la clé à traiter
-     * @param dir le dossier associé à la clé
-     * @return les chemins des fichiers modifiés
+     *
+     * @param key      la clé à traiter
+     * @param dir      le dossier associé à la clé
+     * @param added la liste des fichiers ajoutés
+     * @param modified la liste des fichiers modifiés
+     * @param deleted la liste des fichiers supprimés
      */
-    private Path[] processEvents(WatchKey key, Path dir) {
+    private void processEvents(WatchKey key, Path dir, List<Path> added, List<Path> modified, List<Path> deleted) {
         var events = key.pollEvents();
-        Path[] children = new Path[events.size()];
         var it = events.iterator();
 
         for (int i = 0; it.hasNext(); i++) {
@@ -187,17 +195,23 @@ public class TreeWatcher {
             }
 
             WatchEvent<Path> ev = (WatchEvent<Path>) event;
-            Path child = dir.resolve(ev.context());
-            children[i] = child;
+            Path path = dir.resolve(ev.context());
 
-            if (kind == ENTRY_CREATE && Files.isDirectory(child, NOFOLLOW_LINKS)) {
-                try {
-                    registerRoot(child);
-                } catch (IOException x) {
-                    System.err.println("Failed to register directory " + child + ": " + x);
+            if (kind == ENTRY_CREATE) {
+                added.add(path);
+
+                if (Files.isDirectory(path, NOFOLLOW_LINKS)) {
+                    try {
+                        registerRoot(path);
+                    } catch (IOException x) {
+                        System.err.println("Failed to register directory " + path + ": " + x);
+                    }
                 }
+            } else if (kind == ENTRY_MODIFY) {
+                modified.add(path);
+            } else if (kind == ENTRY_DELETE) {
+                deleted.add(path);
             }
         }
-        return children;
     }
 }
