@@ -5,7 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static picocli.CommandLine.ExitCode;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.file.Files;
+import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,6 +58,33 @@ class ServeCmdTest extends BaseCmdTest {
         assertEquals(ExitCode.USAGE, execute(TEST_DIRECTORY.toString()));
     }
 
-    // TODO ajouter des tests qui vérifient que le serveur est bien lancé
-    // à voir comment faire avec le System.in
+    @Test
+    void itShouldServeHttpRequests() throws Exception {
+        int port = 8080;
+        URI url = URI.create("http://localhost:" + port + "/index.html");
+        redirectIO();
+
+        var future = CompletableFuture.supplyAsync(() -> {
+            return execute(TEST_DIRECTORY.toString(), "-p", "" + port);
+        });
+
+        var client = HttpClient.newHttpClient();
+        var request =
+                HttpRequest.newBuilder(url).header("accept", "application/json").build();
+
+        while (true) {
+            var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == 200) {
+                break;
+            }
+        }
+        System.out.println(ServeCmd.STOP_KEYWORD);
+        assertEquals(ExitCode.OK, future.join());
+        resetIO();
+    }
+
+    @Test
+    void itShouldThrowOnInvalidPort() {
+        assertEquals(ExitCode.USAGE, execute(TEST_DIRECTORY.toString(), "-p", "-1"));
+    }
 }

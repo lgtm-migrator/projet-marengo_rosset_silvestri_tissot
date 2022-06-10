@@ -12,23 +12,34 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.util.resource.Resource;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
 /**
  * @author Stéphane Marengo
  */
 @Command(name = "serve", description = "Start a web server to preview the site")
 public class ServeCmd implements Callable<Integer> {
-    private static final String STOP_KEYWORD = "exit";
+    static final String STOP_KEYWORD = "exit";
     private static final int DEFAULT_PORT = 8080;
 
     @Parameters(description = "Path to the sources directory", converter = PathDirectoryConverter.class)
     private Path path;
+
+    @Option(
+            names = {"-p", "--port"},
+            description = "Port to use for the web server",
+            defaultValue = "" + DEFAULT_PORT)
+    private int port;
 
     private Server server;
 
     @Override
     public Integer call() {
         Path buildPath = path.resolve(BuildCmd.BUILD_DIR);
+        if (port < 0 || port > 65535) {
+            System.err.println("Invalid port number");
+            return ExitCode.USAGE;
+        }
         if (!Files.isDirectory(buildPath)) {
             System.err.println("The build directory does not exist. You should run the build command first.");
             return ExitCode.USAGE;
@@ -53,10 +64,10 @@ public class ServeCmd implements Callable<Integer> {
      */
     private boolean startServer(Path srcPath) {
         try {
-            startServer(DEFAULT_PORT, srcPath);
+            startServer(port, srcPath);
         } catch (Exception e) {
             System.out.println(
-                    "Could not start the server on port " + DEFAULT_PORT + ". Trying to start it on another port...");
+                    "Could not start the server on port " + port + ". Trying to start it on another port...");
             try {
                 startServer(0, srcPath);
             } catch (Exception e2) {

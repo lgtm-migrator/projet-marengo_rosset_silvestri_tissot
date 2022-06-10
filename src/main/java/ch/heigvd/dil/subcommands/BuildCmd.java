@@ -18,7 +18,7 @@ import java.util.stream.Stream;
  */
 @Command(name = "build", description = "Builds the site")
 public class BuildCmd implements Callable<Integer> {
-    private static final String STOP_KEYWORD = "exit";
+    static final String STOP_KEYWORD = "exit";
     public static final String BUILD_DIR = "build";
     static final String TEMPLATE_DIR = "templates";
     static final String CONFIG_FILE = "config.yaml";
