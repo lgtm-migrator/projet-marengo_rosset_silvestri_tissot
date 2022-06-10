@@ -87,4 +87,21 @@ class ServeCmdTest extends BaseCmdTest {
     void itShouldThrowOnInvalidPort() {
         assertEquals(ExitCode.USAGE, execute(TEST_DIRECTORY.toString(), "-p", "-1"));
     }
+
+    @Test
+    void itShouldRebuildWhenWatching() throws Exception {
+        // TODO à fix
+        //        redirectIO();
+        //
+        //        var future = CompletableFuture.runAsync(() -> {
+        //            execute(TEST_DIRECTORY.toString(), "--watch");
+        //        });
+        //
+        //        Files.writeString(TEST_DIRECTORY.resolve("test.md"), "contenu");
+        //        awaitFile(BUILD_PATH.resolve("test.html"));
+        //        System.out.println(ServeCmd.STOP_KEYWORD);
+        //        future.join();
+        //        assertTrue(Files.exists(BUILD_PATH.resolve("test.html")));
+        //        resetIO();
+    }
 }

@@ -4,8 +4,7 @@ package ch.heigvd.dil.subcommands;
 import ch.heigvd.dil.Site;
 import ch.heigvd.dil.util.FilesHelper;
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import picocli.CommandLine;
 
 /**
@@ -109,5 +108,38 @@ abstract class BaseCmdTest {
     protected void resetIO() {
         System.setIn(this.in);
         System.setOut(this.out);
+    }
+
+    /**
+     * <a href="https://stackoverflow.com/a/57508242">Source</a>
+     */
+    protected static void awaitFile(Path target) throws IOException, InterruptedException {
+        final Path name = target.getFileName();
+        final Path targetDir = target.getParent();
+
+        // If path already exists, return early
+        if (Files.exists(target)) return;
+
+        try (WatchService watchService = FileSystems.getDefault().newWatchService()) {
+            final WatchKey watchKey = targetDir.register(watchService, StandardWatchEventKinds.ENTRY_CREATE);
+            // The file could have been created in the window between Files.readAttributes and Path.register
+            if (Files.exists(target)) return;
+
+            // The file is absent: watch events in parent directory
+            WatchKey watchKey1 = null;
+            boolean valid = true;
+            do {
+                long t0 = System.currentTimeMillis();
+                watchKey1 = watchService.take();
+                // Examine events associated with key
+                for (WatchEvent<?> event : watchKey1.pollEvents()) {
+                    Path path1 = (Path) event.context();
+                    if (path1.getFileName().equals(name)) {
+                        return;
+                    }
+                }
+                valid = watchKey1.reset();
+            } while (valid);
+        }
     }
 }

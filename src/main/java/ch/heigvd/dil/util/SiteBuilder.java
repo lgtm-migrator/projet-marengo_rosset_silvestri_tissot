@@ -1,5 +1,6 @@
 package ch.heigvd.dil.util;
 
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,7 +17,7 @@ public class SiteBuilder {
     static final String CONFIG_FILE = "config.yaml";
 
     private final Path srcPath;
-    private final Path outPath;
+    private final Path buildPath;
     private final HTMLTemplater templater;
 
     /**
@@ -27,13 +28,7 @@ public class SiteBuilder {
      */
     public SiteBuilder(Path src, String buildDir) throws IOException {
         srcPath = src;
-        outPath = srcPath.resolve(buildDir);
-
-        try {
-            FilesHelper.cleanDirectory(outPath);
-        } catch (IOException e) {
-            throw new IOException("An error occurred while creating the directory: " + e.getMessage());
-        }
+        buildPath = srcPath.resolve(buildDir);
 
         try {
             templater = new HTMLTemplater(srcPath.resolve(CONFIG_FILE), srcPath.resolve(TEMPLATE_DIR));
@@ -47,6 +42,12 @@ public class SiteBuilder {
      * @return vrai si tout s'est bien passé, faux sinon
      */
     public boolean build() {
+        try {
+            FilesHelper.cleanDirectory(buildPath);
+        } catch (IOException e) {
+            System.err.println(("An error occurred while creating the directory: " + e.getMessage()));
+            return false;
+        }
         try {
             buildSite();
         } catch (IOException e) {
@@ -76,6 +77,10 @@ public class SiteBuilder {
      * @return vrai si le fichier a pu être copié, faux sinon
      */
     public boolean buildFile(Path file) {
+        if (!Files.isDirectory(buildPath)) {
+            System.err.println("Le dossier de build n'existe pas.");
+            return false;
+        }
         var outPath = getOutputpath(file);
 
         try {
@@ -112,7 +117,7 @@ public class SiteBuilder {
      * @return le chemin de destination
      */
     public Path getOutputpath(Path file) {
-        return outPath.resolve(srcPath.relativize(file));
+        return buildPath.resolve(srcPath.relativize(file));
     }
 
     /**
@@ -120,7 +125,7 @@ public class SiteBuilder {
      * @return le chemin du dossier de build
      */
     public Path getBuildPath() {
-        return outPath;
+        return buildPath;
     }
 
     /**
