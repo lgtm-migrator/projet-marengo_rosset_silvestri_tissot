@@ -5,7 +5,6 @@ import static picocli.CommandLine.Parameters;
 
 import ch.heigvd.dil.converter.PathDirectoryConverter;
 import ch.heigvd.dil.util.FilesHelper;
-import ch.heigvd.dil.util.SiteBuilder;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,7 +22,7 @@ public class CleanCmd implements Callable<Integer> {
 
     @Override
     public Integer call() {
-        Path buildDir = path.resolve(SiteBuilder.BUILD_DIR);
+        Path buildDir = path.resolve(BuildableCmd.BUILD_DIR);
 
         if (!Files.isDirectory(buildDir)) return ExitCode.OK;
 

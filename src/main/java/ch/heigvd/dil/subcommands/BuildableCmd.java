@@ -1,19 +1,18 @@
 package ch.heigvd.dil.subcommands;
 
+
 import ch.heigvd.dil.converter.PathDirectoryConverter;
 import ch.heigvd.dil.util.FilesHelper;
 import ch.heigvd.dil.util.SiteBuilder;
 import ch.heigvd.dil.util.TreeWatcher;
-import picocli.CommandLine;
-import picocli.CommandLine.Command;
-import picocli.CommandLine.ExitCode;
-import picocli.CommandLine.ScopeType;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.ScopeType;
 
 /**
  * Commande de base permettant de construire un site. Ce dernier peut également être lancé
@@ -23,6 +22,7 @@ import java.util.concurrent.Callable;
 @Command(scope = ScopeType.INHERIT)
 public abstract class BuildableCmd implements Callable<Integer> {
     static final String STOP_KEYWORD = "exit";
+    public static final String BUILD_DIR = "build";
 
     @CommandLine.Option(
             names = {"-w", "--watch"},
@@ -33,31 +33,39 @@ public abstract class BuildableCmd implements Callable<Integer> {
     @CommandLine.Parameters(description = "Path to the sources directory", converter = PathDirectoryConverter.class)
     private Path srcPath;
 
+    private Path outPath;
+
     private TreeWatcher watcher;
 
     private SiteBuilder siteBuilder;
 
     /**
      * Créé le SiteBuilder.
-     * @return ExitCode.OK si tout s'est bien passé, ExitCode.SOFTWARE sinon.
+     * Affiche un message d'erreur si ce dernier ne peut être créé.
+     *
+     * @return vrai si l'initialisation a réussi, faux sinon.
      */
-    @Override
-    public Integer call() {
+    private boolean initBuilder() {
+        if (siteBuilder != null) return true;
+
         try {
-            siteBuilder = new SiteBuilder(srcPath);
+            siteBuilder = new SiteBuilder(srcPath, BUILD_DIR);
         } catch (IOException e) {
             System.err.println(e.getMessage());
-            return ExitCode.SOFTWARE;
+            return false;
         }
-
-        return ExitCode.OK;
+        return true;
     }
 
     /**
      * Construit le site.
+     * Affiche des messages d'erreur en cas de problème.
+     *
      * @return vrai si tout s'est bien passé, faux sinon.
      */
     protected boolean build() {
+        if (!initBuilder()) return false;
+
         if (siteBuilder.build()) {
             System.out.println(
                     "Site built successfully to " + siteBuilder.getBuildPath().toAbsolutePath());
@@ -82,6 +90,8 @@ public abstract class BuildableCmd implements Callable<Integer> {
      * @return vrai si le watcher a été démarré, faux sinon.
      */
     protected boolean startWatching() {
+        if (!initBuilder()) return false;
+
         watcher = new TreeWatcher(
                 srcPath, this::watcherHandler, siteBuilder.getBuildPath(), siteBuilder.getTemplatePath());
         try {
@@ -149,5 +159,16 @@ public abstract class BuildableCmd implements Callable<Integer> {
             }
         }
         System.out.println("...done");
+    }
+
+    /**
+     * Retourne le chemin du dossier de build.
+     * @return le chemin du dossier de build
+     */
+    protected Path getBuildPath() {
+        if (outPath == null) {
+            outPath = srcPath.resolve(BUILD_DIR);
+        }
+        return outPath;
     }
 }

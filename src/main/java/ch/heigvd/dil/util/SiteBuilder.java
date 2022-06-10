@@ -1,6 +1,5 @@
 package ch.heigvd.dil.util;
 
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,7 +14,6 @@ import java.util.stream.Stream;
 public class SiteBuilder {
     public static final String TEMPLATE_DIR = "templates";
     static final String CONFIG_FILE = "config.yaml";
-    public static final String BUILD_DIR = "build";
 
     private final Path srcPath;
     private final Path outPath;
@@ -24,11 +22,12 @@ public class SiteBuilder {
     /**
      * Construit un SiteBuilder pour le chemin spécifié.
      * @param src le chemin contenant les sources
+     * @param buildDir le nom du dossier de build
      * @throws IOException si le dossier de build ne peut pas être créé ou si le templater ne peut pas être créé
      */
-    public SiteBuilder(Path src) throws IOException {
+    public SiteBuilder(Path src, String buildDir) throws IOException {
         srcPath = src;
-        outPath = srcPath.resolve(BUILD_DIR);
+        outPath = srcPath.resolve(buildDir);
 
         try {
             FilesHelper.cleanDirectory(outPath);

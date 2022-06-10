@@ -10,13 +10,7 @@ import static picocli.CommandLine.ExitCode;
 public class BuildCmd extends BuildableCmd {
     @Override
     public Integer call() {
-        var ret = super.call();
-
-        if (ret != ExitCode.OK) {
-            return ret;
-        }
-
-        build();
+        if (!build()) return ExitCode.SOFTWARE;
 
         if (withWatcher()) {
             if (!startWatching()) return ExitCode.SOFTWARE;
