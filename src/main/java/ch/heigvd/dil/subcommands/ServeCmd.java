@@ -18,7 +18,7 @@ import picocli.CommandLine.Command;
  */
 @Command(name = "serve", description = "Start a web server to preview the site")
 public class ServeCmd implements Callable<Integer> {
-    private static final String STOP_KEYWORD = "exit";
+    static final String STOP_KEYWORD = "exit";
     private static final int DEFAULT_PORT = 8080;
 
     @Parameters(description = "Path to the sources directory", converter = PathDirectoryConverter.class)

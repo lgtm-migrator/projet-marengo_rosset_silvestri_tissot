@@ -85,7 +85,7 @@ class BuildCmdTest extends BaseCmdTest {
 
         Files.writeString(TEST_DIRECTORY.resolve("test.md"), "contenu");
         awaitFile(BUILD_PATH.resolve("index.html"));
-        System.out.println("exit");
+        System.out.println(BuildCmd.STOP_KEYWORD);
         future.join();
         assertTrue(Files.exists(BUILD_PATH.resolve("test.html")));
         resetIO();

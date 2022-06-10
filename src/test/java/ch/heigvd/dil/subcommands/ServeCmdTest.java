@@ -78,7 +78,7 @@ class ServeCmdTest extends BaseCmdTest {
                 break;
             }
         }
-        System.out.println("exit");
+        System.out.println(ServeCmd.STOP_KEYWORD);
         assertEquals(ExitCode.OK, future.join());
         resetIO();
     }
