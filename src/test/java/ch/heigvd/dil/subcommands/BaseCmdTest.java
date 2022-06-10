@@ -3,6 +3,7 @@ package ch.heigvd.dil.subcommands;
 
 import ch.heigvd.dil.Site;
 import ch.heigvd.dil.util.FilesHelper;
+import ch.heigvd.dil.util.SiteBuilder;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,7 +20,7 @@ abstract class BaseCmdTest {
     protected static final Path TEST_SRC_DIRECTORY = Path.of("src/test/resources/basicSite");
     protected static final Path BUILD_SRC_DIRECTORY = Path.of("src/test/resources/basicSiteBuild");
     protected static final Path TEST_DIRECTORY = Path.of("basicSite");
-    protected static final Path BUILD_PATH = TEST_DIRECTORY.resolve(BuildCmd.BUILD_DIR);
+    protected static final Path BUILD_PATH = TEST_DIRECTORY.resolve(SiteBuilder.BUILD_DIR);
     protected static final String INVALID_PATH = "/\0invalidPath";
 
     private InputStream in;
