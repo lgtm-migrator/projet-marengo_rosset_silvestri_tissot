@@ -12,6 +12,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.util.resource.Resource;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
 /**
  * @author Stéphane Marengo
@@ -23,6 +24,12 @@ public class ServeCmd implements Callable<Integer> {
 
     @Parameters(description = "Path to the sources directory", converter = PathDirectoryConverter.class)
     private Path path;
+
+    @Option(
+            names = {"-p", "--port"},
+            description = "Port to use for the web server",
+            defaultValue = "" + DEFAULT_PORT)
+    private int port;
 
     private Server server;
 
@@ -53,10 +60,10 @@ public class ServeCmd implements Callable<Integer> {
      */
     private boolean startServer(Path srcPath) {
         try {
-            startServer(DEFAULT_PORT, srcPath);
+            startServer(port, srcPath);
         } catch (Exception e) {
             System.out.println(
-                    "Could not start the server on port " + DEFAULT_PORT + ". Trying to start it on another port...");
+                    "Could not start the server on port " + port + ". Trying to start it on another port...");
             try {
                 startServer(0, srcPath);
             } catch (Exception e2) {
