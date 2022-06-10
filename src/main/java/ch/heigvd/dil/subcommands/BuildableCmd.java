@@ -139,15 +139,16 @@ public abstract class BuildableCmd implements Callable<Integer> {
      * @param deleted les fichiers supprimés
      */
     private void watcherHandler(Path[] added, Path[] modified, Path[] deleted) {
-        System.out.println("Rebuilding site...");
-
         for (Path p : added) {
+            System.out.println("Building " + p.toAbsolutePath() + "...");
             siteBuilder.buildFile(p);
         }
         for (Path p : modified) {
+            System.out.println("Rebuilding " + p.toAbsolutePath() + "...");
             siteBuilder.buildFile(p);
         }
         for (Path p : deleted) {
+            System.out.println("Deleting " + p.toAbsolutePath() + "...");
             var outPath = siteBuilder.getOutputpath(p);
             try {
                 if (Files.isDirectory(p)) {
