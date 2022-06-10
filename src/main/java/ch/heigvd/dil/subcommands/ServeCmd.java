@@ -4,6 +4,7 @@ import static picocli.CommandLine.ExitCode;
 import static picocli.CommandLine.Parameters;
 
 import ch.heigvd.dil.converter.PathDirectoryConverter;
+import ch.heigvd.dil.util.SiteBuilder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Scanner;
@@ -35,7 +36,7 @@ public class ServeCmd implements Callable<Integer> {
 
     @Override
     public Integer call() {
-        Path buildPath = path.resolve(BuildCmd.BUILD_DIR);
+        Path buildPath = path.resolve(SiteBuilder.BUILD_DIR);
         if (port < 0 || port > 65535) {
             System.err.println("Invalid port number");
             return ExitCode.USAGE;
