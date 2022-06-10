@@ -82,4 +82,9 @@ class ServeCmdTest extends BaseCmdTest {
         assertEquals(ExitCode.OK, future.join());
         resetIO();
     }
+
+    @Test
+    void itShouldThrowOnInvalidPort() {
+        assertEquals(ExitCode.USAGE, execute(TEST_DIRECTORY.toString(), "-p", "-1"));
+    }
 }

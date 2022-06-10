@@ -36,6 +36,10 @@ public class ServeCmd implements Callable<Integer> {
     @Override
     public Integer call() {
         Path buildPath = path.resolve(BuildCmd.BUILD_DIR);
+        if (port < 0 || port > 65535) {
+            System.err.println("Invalid port number");
+            return ExitCode.USAGE;
+        }
         if (!Files.isDirectory(buildPath)) {
             System.err.println("The build directory does not exist. You should run the build command first.");
             return ExitCode.USAGE;
