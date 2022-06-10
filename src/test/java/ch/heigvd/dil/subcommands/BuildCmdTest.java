@@ -4,9 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static picocli.CommandLine.ExitCode;
 
 import java.io.IOException;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.io.PrintStream;
 import java.nio.file.*;
 import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.AfterEach;
@@ -78,11 +75,7 @@ class BuildCmdTest extends BaseCmdTest {
 
     @Test
     void itShouldRebuildWhenWatching() throws Exception {
-        // Redirection des flux
-        PipedInputStream in = new PipedInputStream();
-        PipedOutputStream out = new PipedOutputStream(in);
-        System.setIn(in);
-        System.setOut(new PrintStream(out));
+        redirectIO();
 
         Files.createDirectory(BUILD_PATH); // Nécessaire pour enregistrer le watcher
 
@@ -95,6 +88,7 @@ class BuildCmdTest extends BaseCmdTest {
         System.out.println("exit");
         future.join();
         assertTrue(Files.exists(BUILD_PATH.resolve("test.html")));
+        resetIO();
     }
 
     /**

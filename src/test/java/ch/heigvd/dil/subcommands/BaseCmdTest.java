@@ -3,7 +3,7 @@ package ch.heigvd.dil.subcommands;
 
 import ch.heigvd.dil.Site;
 import ch.heigvd.dil.util.FilesHelper;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import picocli.CommandLine;
@@ -21,6 +21,9 @@ abstract class BaseCmdTest {
     protected static final Path TEST_DIRECTORY = Path.of("basicSite");
     protected static final Path BUILD_PATH = TEST_DIRECTORY.resolve(BuildCmd.BUILD_DIR);
     protected static final String INVALID_PATH = "/\0invalidPath";
+
+    private InputStream in;
+    private PrintStream out;
 
     /**
      * Retourne le nom de la commande à tester.
@@ -85,5 +88,26 @@ abstract class BaseCmdTest {
     protected static void cleanBuild() throws IOException {
         FilesHelper.cleanDirectory(BUILD_PATH);
         Files.delete(BUILD_PATH);
+    }
+
+    /**
+     * Redirige les flux d'entrée/sortie.
+     * @throws IOException si une erreur survient lors de la redirection
+     */
+    protected void redirectIO() throws IOException {
+        this.in = System.in;
+        this.out = System.out;
+        PipedInputStream in = new PipedInputStream();
+        PipedOutputStream out = new PipedOutputStream(in);
+        System.setIn(in);
+        System.setOut(new PrintStream(out));
+    }
+
+    /**
+     * Restaure les flux d'entrée/sortie.
+     */
+    protected void resetIO() {
+        System.setIn(this.in);
+        System.setOut(this.out);
     }
 }
