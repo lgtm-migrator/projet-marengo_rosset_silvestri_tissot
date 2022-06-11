@@ -6,6 +6,7 @@ import static picocli.CommandLine.ExitCode;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -75,20 +76,22 @@ class BuildCmdTest extends BaseCmdTest {
 
     @Test
     void itShouldRebuildWhenWatching() throws Exception {
-        // TODO à fix
-        //        redirectIO();
-        //
-        //        Files.createDirectory(BUILD_PATH); // Nécessaire pour enregistrer le watcher
-        //
-        //        var future = CompletableFuture.runAsync(() -> {
-        //            execute(TEST_DIRECTORY.toString(), "--watch");
-        //        });
-        //
-        //        awaitFile(BUILD_PATH.resolve("index.html"));
-        //        Files.writeString(TEST_DIRECTORY.resolve("test.md"), "contenu");
-        //        System.out.println(BuildCmd.STOP_KEYWORD);
-        //        future.join();
-        //        assertTrue(Files.exists(BUILD_PATH.resolve("test.html")));
-        //        resetIO();
+        var outs = redirectIO();
+        var out = outs.getFirst();
+        var reader = outs.getSecond();
+
+        var future = CompletableFuture.supplyAsync(() -> {
+            return execute(TEST_DIRECTORY.toString(), "--watch");
+        });
+
+        while (!reader.toString().contains(ServeCmd.STOP_KEYWORD)) {
+            Thread.sleep(1000);
+        }
+
+        Files.writeString(TEST_DIRECTORY.resolve("test.md"), "contenu");
+        awaitFile(BUILD_PATH.resolve("test.html"));
+        out.println(ServeCmd.STOP_KEYWORD);
+        assertEquals(ExitCode.OK, future.join());
+        resetIO();
     }
 }

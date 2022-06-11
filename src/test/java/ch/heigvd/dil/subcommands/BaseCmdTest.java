@@ -3,6 +3,7 @@ package ch.heigvd.dil.subcommands;
 
 import ch.heigvd.dil.Site;
 import ch.heigvd.dil.util.FilesHelper;
+import ch.heigvd.dil.util.Tuple;
 import java.io.*;
 import java.nio.file.*;
 import picocli.CommandLine;
@@ -91,15 +92,19 @@ abstract class BaseCmdTest {
 
     /**
      * Redirige les flux d'entrée/sortie.
+     * @return un tuple de flux, le premier permettant d'écrire dans System.in,
+     *          le second permettant de lire dans System.out
      * @throws IOException si une erreur survient lors de la redirection
      */
-    protected void redirectIO() throws IOException {
+    protected Tuple<PrintStream, ByteArrayOutputStream> redirectIO() throws IOException {
         this.in = System.in;
         this.out = System.out;
         PipedInputStream in = new PipedInputStream();
         PipedOutputStream out = new PipedOutputStream(in);
         System.setIn(in);
-        System.setOut(new PrintStream(out));
+        ByteArrayOutputStream readableOut = new java.io.ByteArrayOutputStream();
+        System.setOut(new java.io.PrintStream(readableOut));
+        return new Tuple<>(new PrintStream(out), readableOut);
     }
 
     /**

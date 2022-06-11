@@ -62,7 +62,8 @@ class ServeCmdTest extends BaseCmdTest {
     void itShouldServeHttpRequests() throws Exception {
         int port = 8080;
         URI url = URI.create("http://localhost:" + port + "/index.html");
-        redirectIO();
+        var outs = redirectIO();
+        var out = outs.getFirst();
 
         var future = CompletableFuture.supplyAsync(() -> {
             return execute(TEST_DIRECTORY.toString(), "-p", "" + port);
@@ -77,8 +78,9 @@ class ServeCmdTest extends BaseCmdTest {
             if (response.statusCode() == 200) {
                 break;
             }
+            Thread.sleep(1000);
         }
-        System.out.println(ServeCmd.STOP_KEYWORD);
+        out.println(ServeCmd.STOP_KEYWORD);
         assertEquals(ExitCode.OK, future.join());
         resetIO();
     }
@@ -90,18 +92,22 @@ class ServeCmdTest extends BaseCmdTest {
 
     @Test
     void itShouldRebuildWhenWatching() throws Exception {
-        // TODO à fix
-        //        redirectIO();
-        //
-        //        var future = CompletableFuture.runAsync(() -> {
-        //            execute(TEST_DIRECTORY.toString(), "--watch");
-        //        });
-        //
-        //        Files.writeString(TEST_DIRECTORY.resolve("test.md"), "contenu");
-        //        awaitFile(BUILD_PATH.resolve("test.html"));
-        //        System.out.println(ServeCmd.STOP_KEYWORD);
-        //        future.join();
-        //        assertTrue(Files.exists(BUILD_PATH.resolve("test.html")));
-        //        resetIO();
+        var outs = redirectIO();
+        var out = outs.getFirst();
+        var reader = outs.getSecond();
+
+        var future = CompletableFuture.supplyAsync(() -> {
+            return execute(TEST_DIRECTORY.toString(), "--watch");
+        });
+
+        while (!reader.toString().contains(ServeCmd.STOP_KEYWORD)) {
+            Thread.sleep(1000);
+        }
+
+        Files.writeString(TEST_DIRECTORY.resolve("test.md"), "contenu");
+        awaitFile(BUILD_PATH.resolve("test.html"));
+        out.println(ServeCmd.STOP_KEYWORD);
+        assertEquals(ExitCode.OK, future.join());
+        resetIO();
     }
 }
