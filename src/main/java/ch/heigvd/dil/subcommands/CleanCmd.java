@@ -22,7 +22,7 @@ public class CleanCmd implements Callable<Integer> {
 
     @Override
     public Integer call() {
-        Path buildDir = path.resolve(BuildCmd.BUILD_DIR);
+        Path buildDir = path.resolve(BuildableCmd.BUILD_DIR);
 
         if (!Files.isDirectory(buildDir)) return ExitCode.OK;
 

@@ -2,6 +2,7 @@ package ch.heigvd.dil.subcommands;
 
 
 import ch.heigvd.dil.converter.PathConverter;
+import ch.heigvd.dil.util.SiteBuilder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -30,7 +31,7 @@ public class InitCmd implements Callable<Integer> {
     public Integer call() {
         try {
             Files.createDirectories(path);
-            Files.createDirectories(path.resolve(BuildCmd.TEMPLATE_DIR));
+            Files.createDirectories(path.resolve(SiteBuilder.TEMPLATE_DIR));
         } catch (IOException e) {
             System.err.println("Error while creating the site: " + e.getMessage());
             return ExitCode.SOFTWARE;
@@ -39,8 +40,8 @@ public class InitCmd implements Callable<Integer> {
         try {
             copyFileIfMissing(CONFIG_FILE, path.resolve("config.yaml"));
             copyFileIfMissing(INDEX_FILE, path.resolve("index.md"));
-            copyFileIfMissing(LAYOUT_FILE, path.resolve(BuildCmd.TEMPLATE_DIR + "/layout.html"));
-            copyFileIfMissing(MENU_FILE, path.resolve(BuildCmd.TEMPLATE_DIR + "/menu.html"));
+            copyFileIfMissing(LAYOUT_FILE, path.resolve(SiteBuilder.TEMPLATE_DIR + "/layout.html"));
+            copyFileIfMissing(MENU_FILE, path.resolve(SiteBuilder.TEMPLATE_DIR + "/menu.html"));
         } catch (IOException e) {
             System.err.println("Error while creating the default files: " + e.getMessage());
             return ExitCode.SOFTWARE;

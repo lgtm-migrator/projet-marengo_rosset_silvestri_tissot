@@ -3,6 +3,7 @@ package ch.heigvd.dil.subcommands;
 import static org.junit.jupiter.api.Assertions.*;
 import static picocli.CommandLine.ExitCode;
 
+import ch.heigvd.dil.util.SiteBuilder;
 import java.io.IOException;
 import java.nio.file.Files;
 import org.junit.jupiter.api.AfterEach;
@@ -34,20 +35,20 @@ public class InitCmdTest extends BaseCmdTest {
         assertFalse(Files.isDirectory(TEST_DIRECTORY));
         assertEquals(ExitCode.OK, execute(TEST_DIRECTORY.toString()));
         assertTrue(Files.isDirectory(TEST_DIRECTORY));
-        assertTrue(Files.isDirectory(TEST_DIRECTORY.resolve(BuildCmd.TEMPLATE_DIR)));
+        assertTrue(Files.isDirectory(TEST_DIRECTORY.resolve(SiteBuilder.TEMPLATE_DIR)));
     }
 
     @Test
     void itShouldCreateTheDefaultSite() {
         assertFalse(Files.isDirectory(TEST_DIRECTORY));
-        assertFalse(Files.isDirectory(TEST_DIRECTORY.resolve(BuildCmd.TEMPLATE_DIR)));
+        assertFalse(Files.isDirectory(TEST_DIRECTORY.resolve(SiteBuilder.TEMPLATE_DIR)));
         assertEquals(ExitCode.OK, execute(TEST_DIRECTORY.toString()));
         assertEquals(
                 ExitCode.OK,
-                execute(TEST_DIRECTORY.resolve(BuildCmd.TEMPLATE_DIR).toString()));
+                execute(TEST_DIRECTORY.resolve(SiteBuilder.TEMPLATE_DIR).toString()));
         assertTrue(Files.isRegularFile(TEST_DIRECTORY.resolve("index.md")));
         assertTrue(Files.isRegularFile(TEST_DIRECTORY.resolve("config.yaml")));
-        assertTrue(Files.isRegularFile(TEST_DIRECTORY.resolve(BuildCmd.TEMPLATE_DIR + "/layout.html")));
+        assertTrue(Files.isRegularFile(TEST_DIRECTORY.resolve(SiteBuilder.TEMPLATE_DIR + "/layout.html")));
     }
 
     @Test
@@ -87,9 +88,9 @@ public class InitCmdTest extends BaseCmdTest {
         createBasicSite();
         assertEquals(
                 ExitCode.OK,
-                execute(TEST_DIRECTORY.resolve(BuildCmd.TEMPLATE_DIR).toString()));
+                execute(TEST_DIRECTORY.resolve(SiteBuilder.TEMPLATE_DIR).toString()));
 
-        var indexFile = TEST_DIRECTORY.resolve(BuildCmd.TEMPLATE_DIR + "/layout.html");
+        var indexFile = TEST_DIRECTORY.resolve(SiteBuilder.TEMPLATE_DIR + "/layout.html");
 
         assertTrue(Files.isRegularFile(indexFile));
 
@@ -98,6 +99,7 @@ public class InitCmdTest extends BaseCmdTest {
 
         assertNotEquals(defaultContent, basicSiteContent);
         assertEquals(
-                Files.readString(TEST_SRC_DIRECTORY.resolve(BuildCmd.TEMPLATE_DIR + "/layout.html")), basicSiteContent);
+                Files.readString(TEST_SRC_DIRECTORY.resolve(SiteBuilder.TEMPLATE_DIR + "/layout.html")),
+                basicSiteContent);
     }
 }

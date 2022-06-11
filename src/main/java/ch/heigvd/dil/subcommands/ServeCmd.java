@@ -1,13 +1,9 @@
 package ch.heigvd.dil.subcommands;
 
 import static picocli.CommandLine.ExitCode;
-import static picocli.CommandLine.Parameters;
 
-import ch.heigvd.dil.converter.PathDirectoryConverter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Scanner;
-import java.util.concurrent.Callable;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.util.resource.Resource;
@@ -18,12 +14,8 @@ import picocli.CommandLine.Option;
  * @author Stéphane Marengo
  */
 @Command(name = "serve", description = "Start a web server to preview the site")
-public class ServeCmd implements Callable<Integer> {
-    static final String STOP_KEYWORD = "exit";
+public class ServeCmd extends BuildableCmd {
     private static final int DEFAULT_PORT = 8080;
-
-    @Parameters(description = "Path to the sources directory", converter = PathDirectoryConverter.class)
-    private Path path;
 
     @Option(
             names = {"-p", "--port"},
@@ -35,24 +27,32 @@ public class ServeCmd implements Callable<Integer> {
 
     @Override
     public Integer call() {
-        Path buildPath = path.resolve(BuildCmd.BUILD_DIR);
         if (port < 0 || port > 65535) {
             System.err.println("Invalid port number");
             return ExitCode.USAGE;
         }
-        if (!Files.isDirectory(buildPath)) {
+
+        if (!Files.isDirectory(getBuildPath())) {
             System.err.println("The build directory does not exist. You should run the build command first.");
             return ExitCode.USAGE;
         }
 
         System.out.println("Starting server...");
 
-        if (!startServer(buildPath)) return ExitCode.SOFTWARE;
+        if (!startServer(getBuildPath())) return ExitCode.SOFTWARE;
 
-        System.out.println("Type '" + STOP_KEYWORD + "' to stop the server.");
-        waitForExit();
+        if (withWatcher()) {
+            if (!startWatching()) return ExitCode.SOFTWARE;
+            waitForExit();
 
-        if (!stopServer()) return ExitCode.SOFTWARE;
+            boolean watchStopped = stopWatching();
+            boolean serverStopped = stopServer();
+            if (!watchStopped || !serverStopped) return ExitCode.SOFTWARE;
+        } else {
+            waitForExit();
+
+            if (!stopServer()) return ExitCode.SOFTWARE;
+        }
 
         return ExitCode.OK;
     }
@@ -108,15 +108,5 @@ public class ServeCmd implements Callable<Integer> {
             return false;
         }
         return true;
-    }
-
-    /**
-     * Boucle jusqu'à ce que l'utilisateur entre STOP_KEYWORD.
-     */
-    private void waitForExit() {
-        Scanner scanner = new Scanner(System.in);
-        while (!scanner.hasNext(STOP_KEYWORD)) {
-            scanner.nextLine();
-        }
     }
 }
