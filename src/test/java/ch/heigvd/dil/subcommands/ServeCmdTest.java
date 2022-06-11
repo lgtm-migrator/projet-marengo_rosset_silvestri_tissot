@@ -62,7 +62,8 @@ class ServeCmdTest extends BaseCmdTest {
     void itShouldServeHttpRequests() throws Exception {
         int port = 8080;
         URI url = URI.create("http://localhost:" + port + "/index.html");
-        redirectIO();
+        var outs = redirectIO();
+        var out = outs.getFirst();
 
         var future = CompletableFuture.supplyAsync(() -> {
             return execute(TEST_DIRECTORY.toString(), "-p", "" + port);
@@ -77,8 +78,9 @@ class ServeCmdTest extends BaseCmdTest {
             if (response.statusCode() == 200) {
                 break;
             }
+            Thread.sleep(1000);
         }
-        System.out.println(ServeCmd.STOP_KEYWORD);
+        out.println(ServeCmd.STOP_KEYWORD);
         assertEquals(ExitCode.OK, future.join());
         resetIO();
     }
@@ -86,5 +88,26 @@ class ServeCmdTest extends BaseCmdTest {
     @Test
     void itShouldThrowOnInvalidPort() {
         assertEquals(ExitCode.USAGE, execute(TEST_DIRECTORY.toString(), "-p", "-1"));
+    }
+
+    @Test
+    void itShouldRebuildWhenWatching() throws Exception {
+        var outs = redirectIO();
+        var out = outs.getFirst();
+        var reader = outs.getSecond();
+
+        var future = CompletableFuture.supplyAsync(() -> {
+            return execute(TEST_DIRECTORY.toString(), "--watch");
+        });
+
+        while (!reader.toString().contains(ServeCmd.STOP_KEYWORD)) {
+            Thread.sleep(1000);
+        }
+
+        Files.writeString(TEST_DIRECTORY.resolve("test.md"), "contenu");
+        awaitFile(BUILD_PATH.resolve("test.html"));
+        out.println(ServeCmd.STOP_KEYWORD);
+        assertEquals(ExitCode.OK, future.join());
+        resetIO();
     }
 }
