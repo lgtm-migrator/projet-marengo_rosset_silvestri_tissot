@@ -15,6 +15,11 @@ import org.commonmark.renderer.html.HtmlRenderer;
  */
 public class HTMLConverter {
     /**
+     * Interdit la construction.
+     */
+    private HTMLConverter() {}
+
+    /**
      * Converti le contenu markdown fourni en HTML.
      *
      * @param markdown le contenu en format markdown

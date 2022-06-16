@@ -1,6 +1,5 @@
 package ch.heigvd.dil.util;
 
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,6 +12,10 @@ import java.util.stream.Stream;
  * @author Marengo Stéphane
  */
 public class FilesHelper {
+    /**
+     * Interdit la construction.
+     */
+    private FilesHelper() {}
     /**
      * Supprime le contenu du répertoire spécifié.
      * Ce dernier est créé s'il n'existe pas.
