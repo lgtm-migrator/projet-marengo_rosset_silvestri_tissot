@@ -10,7 +10,6 @@
         <fileSet>
             <directory>target/${project.artifactId}</directory>
             <outputDirectory>${project.artifactId}</outputDirectory>
-            <lineEnding>crlf</lineEnding>
         </fileSet>
     </fileSets>
     <files>
