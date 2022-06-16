@@ -18,6 +18,11 @@ public class MarkdownParser {
     private static final String SEPARATOR = "----";
 
     /**
+     * Interdit la construction.
+     */
+    private MarkdownParser() {}
+
+    /**
      * Parse le fichier en séparant la configuration YAML et le contenu markdown.
      *
      * @param path le chemin du fichier markdown à traiter

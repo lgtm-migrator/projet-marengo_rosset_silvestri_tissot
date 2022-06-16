@@ -11,11 +11,11 @@ import org.junit.jupiter.api.Test;
  * @author Loïc Rosset
  * @author Stéphane Marengo
  */
-public class HTMLConverterTest {
+class HTMLConverterTest {
     private static final Path TEST_FILE = Path.of("src/test/resources/markdown_correct.md");
 
     @Test
-    public void itShouldConvertMDtoHTML() throws IOException {
+    void itShouldConvertMDtoHTML() throws IOException {
         String realConversion = "<h1>Mon premier article</h1>\n"
                 + "<h2>Mon sous-titre</h2>\n"
                 + "<p>Le contenu de mon article.</p>\n"

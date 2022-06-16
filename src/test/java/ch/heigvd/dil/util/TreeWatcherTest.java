@@ -1,5 +1,6 @@
 package ch.heigvd.dil.util;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -74,34 +75,36 @@ class TreeWatcherTest {
     }
 
     @Test
-    void itShouldNotifyOnModifiedFile() throws Exception {
-        test(file, () -> Files.writeString(file, "modified"));
+    void itShouldNotifyOnModifiedFile() {
+        assertDoesNotThrow(() -> test(file, () -> Files.writeString(file, "modified")));
     }
 
     @Test
-    void itShouldNotifyOnDeletedFile() throws Exception {
-        test(file, () -> Files.delete(file));
+    void itShouldNotifyOnDeletedFile() {
+        assertDoesNotThrow(() -> test(file, () -> Files.delete(file)));
     }
 
     @Test
-    void itShouldNotifyOnAddedFile() throws Exception {
+    void itShouldNotifyOnAddedFile() {
         Path newFile = rootPath.resolve("newFile.txt");
-        test(newFile, () -> Files.createFile(newFile));
+        assertDoesNotThrow(() -> test(newFile, () -> Files.createFile(newFile)));
     }
 
     @Test
-    void itShouldNotifyOnModifiedFileInSubDirectory() throws Exception {
-        test(nestedFile, () -> Files.writeString(nestedFile, "new content"));
+    void itShouldNotifyOnModifiedFileInSubDirectory() {
+        assertDoesNotThrow(() -> test(nestedFile, () -> Files.writeString(nestedFile, "new content")));
     }
 
     @Test
-    void itShouldNotCrashOnDoubleStart() throws Exception {
-        tw.start();
+    void itShouldNotCrashOnDoubleStart() {
+        assertDoesNotThrow(() -> tw.start());
     }
 
     @Test
-    void itShouldNotCrashOnDoubleStop() throws Exception {
-        tw.stop();
-        tw.stop();
+    void itShouldNotCrashOnDoubleStop() {
+        assertDoesNotThrow(() -> {
+            tw.stop();
+            tw.stop();
+        });
     }
 }

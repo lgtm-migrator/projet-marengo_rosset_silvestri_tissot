@@ -14,6 +14,10 @@ import java.util.stream.Stream;
  */
 public class FilesHelper {
     /**
+     * Interdit la construction.
+     */
+    private FilesHelper() {}
+    /**
      * Supprime le contenu du répertoire spécifié.
      * Ce dernier est créé s'il n'existe pas.
      *
