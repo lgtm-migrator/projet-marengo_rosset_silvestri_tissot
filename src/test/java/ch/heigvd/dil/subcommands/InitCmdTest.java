@@ -8,7 +8,7 @@ import java.nio.file.Files;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-public class InitCmdTest extends BaseCmdTest {
+class InitCmdTest extends BaseCmdTest {
     @Override
     protected String getCommandName() {
         return "init";
