@@ -18,10 +18,8 @@ avec une clé GPG.
 
 # Description de l'application
 
-L'application, réalisée avec [Picocli](https://picocli.info/), est un utilitaire CLI permettant de lancer 4
-sous-commandes différentes.
-
-Pour le moment, les sous-commandes se contentent d'afficher un message spécifique à chaque commande.
+L'application, réalisée avec [Picocli](https://picocli.info/) en Java 11, est un générateur de site statique CLI. Les
+différentes fonctionnalités sont décrites plus bas.
 
 # Installation
 
@@ -55,6 +53,7 @@ Lors du lancement de l'application, il est nécessaire de spécifier la sous-com
     - Les fichiers html créés contiendront le layout et le template spécifié
     - L'option `--watch` permet au `build` de s'effectuer automatiquement dès lors qu'il y a un changement dans les
       fichiers
+    - Le système de templating utilise la syntaxe de [Mustache](https://mustache.github.io/)
     - Exemple : site build /mon/site
 
 
@@ -62,8 +61,9 @@ Lors du lancement de l'application, il est nécessaire de spécifier la sous-com
     - Prends en paramètre le chemin relatif d'un site
     - Permet de lancer un serveur WEB afin de visualiser le site spécifié depuis un navigateur, il est nécessaire de
       faire la compilation du site au préalable
-    - L'option `--watch` permet au `serve` de faire automatiquement une publish dès lors qu'il y a un changement dans
+    - L'option `--watch` permet au `serve` de faire automatiquement un `build` dès lors qu'il y a un changement dans
       les fichiers
+    - L'option `--port` (optionnelle) permet de spécifier le port du serveur
     - Exemple : site serve /mon/site
 
 
@@ -71,12 +71,11 @@ Lors du lancement de l'application, il est nécessaire de spécifier la sous-com
     - Prends en paramètre le chemin relatif d'un site
     - Permet de supprimer le dossier `build` du site spécifié et son contenu
     - Exemple : site clean /mon/site
-    -
 
 - `version`
     - Permet d'afficher la version du logiciel `site`
-    - Exemple : site -V, --version
+    - Exemple : site -V, site --version
 
 - `help`
     - Permet d'afficher les commandes disponibles du logiciel et une brève description
-    - Exemple : site -h, --help
+    - Exemple : site -h, site --help
